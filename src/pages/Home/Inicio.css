@@ -1,0 +1,12 @@
+.Container-PageInicio{
+    background-color: var(--colorAzulOscuro);
+    min-height: 100vh;
+}
+
+.custom-btn {
+  width: 180px;
+  height: 60px;
+  font-size: 1.1rem;
+  margin: 0 5px;
+  border-radius: 8px;
+}
