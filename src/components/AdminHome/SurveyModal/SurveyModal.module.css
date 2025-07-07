@@ -1,0 +1,22 @@
+.header {
+  background-color: var(--colorAzul);
+  color: white;
+}
+
+.body {
+  padding: 1rem;
+}
+
+.footer > .btn-primary {
+  --bs-btn-bg: var(--colorAzul);
+  --bs-btn-border-color: var(--colorAzul);
+}
+
+.footer > .btn-primary:hover {
+  --bs-btn-bg: var(--colorAzulOscuro);
+  --bs-btn-border-color: var(--colorAzulOscuro);
+}
+
+.footer > .btn-secondary {
+  filter: brightness(0.9);
+}
