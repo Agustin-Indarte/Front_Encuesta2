@@ -18,7 +18,13 @@ const initialSurveys = [
 
 const initialCategories = [
   { id: 1, fecha: '19/06/2025', nombre: 'Deportes' },
+  { id: 2, fecha: '07/07/2025', nombre: 'Salud' },
+  { id: 3, fecha: '21/06/2025', nombre: 'Educación' },
+  { id: 4, fecha: '23/06/2025', nombre: 'Tecnología' },
+  { id: 5, fecha: '01/07/2025', nombre: 'Politica' },
+  { id: 6, fecha: '30/06/2025', nombre: 'Cultura' },
 ];
+
 
 function Admin_Home() {
   const [surveys, setSurveys] = useState(initialSurveys);

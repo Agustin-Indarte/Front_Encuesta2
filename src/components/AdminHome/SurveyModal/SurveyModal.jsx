@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'; 
 import { Modal, Button, Form } from 'react-bootstrap';
 import styles from './SurveyModal.module.css';
 
@@ -7,7 +7,11 @@ function SurveyModal({ show, onHide, survey, categories, onSave }) {
 
   useEffect(() => {
     if (survey) {
-      setFormState({ id: survey.id, nombre: survey.nombre, categoria: survey.categoria });
+      setFormState({
+        id: survey.id,
+        nombre: survey.nombre,
+        categoria: survey.categoria
+      });
     } else {
       setFormState({ id: null, nombre: '', categoria: '' });
     }
@@ -15,7 +19,7 @@ function SurveyModal({ show, onHide, survey, categories, onSave }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormState((s) => ({ ...s, [name]: value }));
+    setFormState((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = () => {
@@ -27,12 +31,14 @@ function SurveyModal({ show, onHide, survey, categories, onSave }) {
   return (
     <Modal show={show} onHide={onHide} centered>
       <Modal.Header className={styles.header} closeButton>
-        <Modal.Title>{survey ? 'Editar encuesta' : 'Crear encuesta'}</Modal.Title>
+        <Modal.Title>{survey ? 'Editar Encuesta' : 'Crear Encuesta'}</Modal.Title>
       </Modal.Header>
+
       <Modal.Body className={styles.body}>
         <Form>
+          {/* Nombre */}
           <Form.Group className="mb-3" controlId="surveyName">
-            <Form.Label>Nombre de encuesta</Form.Label>
+            <Form.Label>Nombre de Encuesta</Form.Label>
             <Form.Control
               type="text"
               placeholder="Ingresa un título..."
@@ -41,17 +47,26 @@ function SurveyModal({ show, onHide, survey, categories, onSave }) {
               onChange={handleChange}
             />
           </Form.Group>
+
+          {/* Categoría */}
           <Form.Group className="mb-3" controlId="surveyCategory">
             <Form.Label>Categoría</Form.Label>
-            <Form.Select name="categoria" value={formState.categoria} onChange={handleChange}>
-              <option value="">Selecciona...</option>
+            <Form.Select
+              name="categoria"
+              value={formState.categoria}
+              onChange={handleChange}
+            >
+              <option value="">Selecciona una categoría...</option>
               {categories.map((cat) => (
-                <option key={cat.id} value={cat.nombre}>{cat.nombre}</option>
+                <option key={cat.id} value={cat.nombre}>
+                  {cat.nombre}
+                </option>
               ))}
             </Form.Select>
           </Form.Group>
         </Form>
       </Modal.Body>
+
       <Modal.Footer className={styles.footer}>
         <Button variant="secondary" onClick={onHide}>
           Cancelar
@@ -65,3 +80,4 @@ function SurveyModal({ show, onHide, survey, categories, onSave }) {
 }
 
 export default SurveyModal;
+
