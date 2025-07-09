@@ -1,0 +1,38 @@
+.SideBar-Container {
+  min-height: 160px;
+  width: 50px;
+  display: flex;
+  flex-direction: column;
+}
+
+.btn-SideBar {
+  background-color: var(--colorAzulOscuro);
+  border: 1px solid white;
+  padding: 15px 0;
+  transition: background-color 0.2s ease;
+}
+
+.btn-SideBar:hover {
+  background-color: var(--colorAzul); 
+}
+
+.btn-SideBarDelete {
+  background-color: var(--colorAzulOscuro);
+  border: 1px solid white;
+  padding: 10px 0;
+  transition: background-color 0.2s ease;
+}
+
+.btn-SideBarDelete:hover {
+  background-color: red; 
+}
+
+.icon-SideBar {
+  font-size: 1.7rem;
+  color: white;
+}
+
+.active-btnSideBar {
+  background-color: var(--colorAzul);
+  color: white;
+}

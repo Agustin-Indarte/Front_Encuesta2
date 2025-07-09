@@ -19,12 +19,18 @@ function NavBar() {
                     </Link>
                 </Navbar.Brand>
 
+               
+                    
+               
+
+
+
                 {/* Perfil */}
                 <div
                     className="Navbar-Perfil d-flex align-items-center justify-content-end"
                 >
                     <p className="text-light me-3 fs-4 fw-bold d-none d-md-block mb-0">Nombre Usuario</p>
-                    <Image src="/img/icon-perfil.png" className='me-2' alt="img-perfil"  rounded />
+                    <Image src="/img/icon-perfil.png" className='me-2' alt="img-perfil" rounded />
                 </div>
             </Container>
         </Navbar>

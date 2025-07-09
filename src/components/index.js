@@ -1,3 +1,6 @@
 export {default as Form_Login} from './Login/Form_Login'
 export {default as Form_Register} from './Register/Form_Register'
-export {default as Navbar } from './Navbar/Navbar'
+export {default as Navbar } from './Navegación/Navbar/Navbar'
+export {default as SideBar} from './Admin_Encuestas/SideBar/SideBar'
+export {default as AdmCard} from './Admin_Encuestas/Card/AdmCard'
+export {default as AdmGridCards} from './Admin_Encuestas/GridCards/AdmGridCards'
