@@ -42,29 +42,27 @@ function Admin_Encuestas() {
   };
 
   const deleteCard = (id) => {
-    const newCards = cards.filter(card => card.id !== id);
+ 
+  setCards(prevCards => {
+    const idx = prevCards.findIndex(c => c.id === id);
+    const newCards = prevCards.filter(card => card.id !== id);
 
-    // Si no queda ninguna card, creamos una nueva
     if (newCards.length === 0) {
-      const newCard = {
-        id: crypto.randomUUID(),
-        type: "text",
-        content: {}
-      };
-      setCards([newCard]);
-      setActiveCardId(newCard.id);
-      return;
+      const newCard = { id: crypto.randomUUID(), type: "text", content: {} };
+      setTimeout(() => setActiveCardId(newCard.id), 0);
+      return [newCard];
     }
 
-    setCards(newCards);
-
-    // Si la card eliminada era la activa, cambiar a otra
     if (activeCardId === id) {
-      const idx = cards.findIndex(c => c.id === id);
-      const fallback = newCards[idx] || newCards[idx - 1] || newCards[0];
-      setActiveCardId(fallback?.id || null);
+      const prevCard = prevCards[idx - 1];
+      const nextCard = prevCards[idx + 1];
+      const fallbackId = prevCard?.id || nextCard?.id || newCards[0]?.id;
+      setTimeout(() => setActiveCardId(fallbackId), 0);
     }
-  };
+
+    return newCards;
+  });
+};
 
 
   return (

@@ -2,7 +2,7 @@ import { FaQuestion } from 'react-icons/fa';
 import { MdTextFields, MdPermMedia,MdDelete } from "react-icons/md";
 import './SideBar.css';
 
-const Sidebar = ({ onSelectType, activeType,onDeleteCard }) => {
+const Sidebar = ({ onSelectType, activeType, onDeleteCard, isFirstTextCard }) => {
   return (
     <div className="SideBar-Container d-flex flex-column justify-content-between align-items-stretch">
       <button
@@ -27,8 +27,14 @@ const Sidebar = ({ onSelectType, activeType,onDeleteCard }) => {
       </button>
 
       <button
-        className={`btn-SideBarDelete w-100 d-flex align-items-center justify-content-center rounded-bottom`}
-        onClick={onDeleteCard}
+        className={`btn-SideBarDelete w-100 d-flex align-items-center justify-content-center rounded-bottom ${
+          isFirstTextCard ? "first-card-disabled" : ""
+        }`}
+        onClick={() => {
+          if (!isFirstTextCard) onDeleteCard();
+        }}
+        disabled={isFirstTextCard}
+        title={isFirstTextCard ? "Esta card no puede eliminarse" : ""}
       >
         <MdDelete className="icon-SideBar" />
       </button>

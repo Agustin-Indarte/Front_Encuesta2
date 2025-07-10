@@ -3,7 +3,7 @@ import { Col, Row } from 'react-bootstrap';
 import { SideBar, AdmCard } from '../../../components/index'
 import './admGridCard.css'
 
-const AdmGridCards = ({ cards, activeCardId, onAddCard, onSetActive,onDeleteCard }) => {
+const AdmGridCards = ({ cards, activeCardId, onAddCard, onSetActive, onDeleteCard }) => {
 
 
   // Cuando se selecciona un tipo, agrega una card nueva después de la actual
@@ -11,7 +11,7 @@ const AdmGridCards = ({ cards, activeCardId, onAddCard, onSetActive,onDeleteCard
     onAddCard(type, cardId);
   };
 
- 
+
 
   return (
     <div
@@ -34,6 +34,7 @@ const AdmGridCards = ({ cards, activeCardId, onAddCard, onSetActive,onDeleteCard
                 onSelectType={(type) => handleSelectType(type, card.id)}
                 activeType={card.type}
                 onDeleteCard={() => onDeleteCard(card.id)}
+                isFirstTextCard={cards[0]?.id === card.id && card.type === "text"}
               />
             )}
           </Col>

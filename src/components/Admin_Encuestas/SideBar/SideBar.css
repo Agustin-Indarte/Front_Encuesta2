@@ -27,6 +27,12 @@
   background-color: red; 
 }
 
+/* Estilo especial para la primera card */
+.btn-SideBarDelete.first-card-disabled {
+  background-color: grey; /* Amarillo claro de advertencia */
+  cursor: not-allowed;
+}
+
 .icon-SideBar {
   font-size: 1.7rem;
   color: white;
