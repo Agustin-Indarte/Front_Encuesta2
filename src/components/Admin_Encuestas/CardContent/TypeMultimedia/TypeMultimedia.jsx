@@ -1,7 +1,19 @@
-import React from 'react'
-import { Form, Row,Col } from 'react-bootstrap'
+import React, { useState } from 'react';
+import { Form, Row, Col } from 'react-bootstrap';
 
 function TypeMultimedia() {
+    const [fileUrl, setFileUrl] = useState(null);
+    const [fileType, setFileType] = useState(null); // Nuevo estado para el tipo de archivo
+
+    const handleFileChange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const url = URL.createObjectURL(file);
+            setFileUrl(url);
+            setFileType(file.type.split('/')[0]); // Guardamos el tipo (image o video)
+        }
+    };
+
     return (
         <Form>
             <Row>
@@ -16,20 +28,40 @@ function TypeMultimedia() {
                 </Col>
                 <Col md={4}>
                     <Form.Group>
-                        <Form.Select
-                            className="InputEncuesta fs-4"
-                        >
-                            <option value="">Seleccionar Tipo</option>
-                            <option value="Pregunta">Imagen</option>
-                            <option value="Fecha">Video</option>
-                        </Form.Select>
+                        <Form.Control
+                            type="file"
+                            accept="image/*, video/*"
+                            onChange={handleFileChange}
+                            className="fs-5 py-3"
+                        />
                     </Form.Group>
                 </Col>
             </Row>
 
-
+            {/* Vista previa del multimedia */}
+            <Row className="mt-3">
+                <Col>
+                    {fileUrl && (
+                        fileType === 'image' ? (
+                            <img
+                                src={fileUrl}
+                                alt="Vista previa"
+                                className="img-fluid rounded"
+                                style={{ maxHeight: '500px' }}
+                            />
+                        ) : (
+                            <video
+                                controls
+                                src={fileUrl}
+                                className="img-fluid rounded"
+                                style={{ maxHeight: '800px' }}
+                            />
+                        )
+                    )}
+                </Col>
+            </Row>
         </Form>
-    )
+    );
 }
 
-export default TypeMultimedia
+export default TypeMultimedia;
