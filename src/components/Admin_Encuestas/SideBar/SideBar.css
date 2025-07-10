@@ -1,5 +1,5 @@
 .SideBar-Container {
-    height: 100%; /* Ocupa toda la altura disponible */
+  
     width: 100%; /* Ocupa todo el ancho de la columna */
     display: flex;
     flex-direction: column;
