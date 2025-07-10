@@ -13,21 +13,14 @@
     padding: 0; /* Elimina paddings no deseados */
 }
 
-/* Asegura que las columnas ocupen todo el espacio vertical */
-.Container-AdmCard > [class*="col-"] {
-    display: flex;
-    flex-direction: column;
-    padding: 0; /* Elimina padding interno de las columnas */
-}
-
 /* Estilo para la columna del Sidebar */
 .sidebar-col {
-    padding: 0.5rem 0 !important; /* Pequeño padding vertical si es necesario */
+    padding: .5rem 0 ; /* Pequeño padding vertical si es necesario */
     max-width: 50px; /* Igual al ancho del Sidebar */
 }
 
 /* Estilo para la columna de la Card */
 .card-col {
-    padding: 0.5rem !important; /* Ajusta según necesidad */
+    padding: 0.5rem; /* Ajusta según necesidad */
     flex-grow: 1;
 }

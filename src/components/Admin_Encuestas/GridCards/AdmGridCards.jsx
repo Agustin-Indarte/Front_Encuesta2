@@ -1,20 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect,useRef } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import { SideBar, AdmCard } from '../../../components/index'
 import './admGridCard.css'
 
 const AdmGridCards = ({ cards, activeCardId, onAddCard, onSetActive, onDeleteCard }) => {
 
+  // Referencia al contenedor del scroll
+  const gridContainerRef = useRef(null);
+  // Guardamos el número previo de cards para comparar
+  const prevCardsLengthRef = useRef(cards.length);
 
   // Cuando se selecciona un tipo, agrega una card nueva después de la actual
   const handleSelectType = (type, cardId) => {
     onAddCard(type, cardId);
   };
 
+  // Efecto para el auto-scroll
+  useEffect(() => {
+    const gridContainer = gridContainerRef.current;
+    const prevCardsLength = prevCardsLengthRef.current;
+
+    // Solo hacemos scroll si:
+    // 1. Hay cards (evita el primer render)
+    // 2. El número de cards aumentó (se agregó una nueva)
+    if (gridContainer && cards.length > 0 && cards.length > prevCardsLength) {
+      gridContainer.scrollTo({
+        top: gridContainer.scrollHeight,
+        behavior: 'smooth' // Efecto suave
+      });
+    }
+
+    // Actualizamos la referencia con el nuevo length
+    prevCardsLengthRef.current = cards.length;
+  }, [cards.length])
+
 
 
   return (
-    <div className='AdmGridCard'>
+    <div 
+    className='AdmGridCard'
+    ref={gridContainerRef} // Asignamos la referencia 
+    >
       {cards.map((card) => (
         <Row
           key={card.id}

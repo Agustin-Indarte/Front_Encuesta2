@@ -19,45 +19,56 @@ function TypeQuestion() {
         setTipoPregunta(e.target.value);
     };
 
-    // Manejar cambios en opciones de selección
+    // Eliminar una opción
+    const eliminarOpcion = (index, opcionesArray, setOpciones) => {
+        if (opcionesArray.length > 1) {
+            const nuevasOpciones = opcionesArray.filter((_, i) => i !== index);
+            setOpciones(nuevasOpciones);
+        }
+    };
+
+    const agregarOpcionManual = () => {
+        setOpciones([...opciones, '']); // Añade un campo vacío al final
+    };
+
+    // Para Choise (Opción múltiple)
     const manejarCambioOpcion = (indice, valor) => {
         const nuevasOpciones = [...opciones];
         nuevasOpciones[indice] = valor;
         setOpciones(nuevasOpciones);
 
-        // Agregar nueva opción si la última no está vacía
-        if (indice === opciones.length - 1 && valor.trim() !== '') {
-            setOpciones([...opciones, '']);
+        // Agregar nuevo campo si:
+        // 1. Es el último campo Y
+        // 2. El valor anterior estaba vacío ("") Y
+        // 3. El nuevo valor tiene al menos 1 carácter (primera letra)
+        if (indice === opciones.length - 1 && opciones[indice] === "" && valor.length === 1) {
+            setOpciones([...nuevasOpciones, ""]);
         }
     };
 
-    // Eliminar una opción
-    const eliminarOpcion = (indice) => {
-        if (opciones.length > 1) {
-            const nuevasOpciones = opciones.filter((_, i) => i !== indice);
-            setOpciones(nuevasOpciones);
-        }
-    };
 
-    // Manejar cambios en opciones de desplegable
-    const manejarCambioDesplegable = (indice, valor) => {
-        const nuevasOpciones = [...opcionesDesplegable];
-        nuevasOpciones[indice] = valor;
-        setOpcionesDesplegable(nuevasOpciones);
 
-        if (indice === opcionesDesplegable.length - 1 && valor.trim() !== '') {
-            setOpcionesDesplegable([...opcionesDesplegable, '']);
-        }
-    };
 
-    // Manejar cambios en opciones de verificación
+
+    // Para Verificación
     const manejarCambioVerificacion = (indice, valor) => {
         const nuevasOpciones = [...opcionesVerificacion];
         nuevasOpciones[indice] = valor;
         setOpcionesVerificacion(nuevasOpciones);
 
-        if (indice === opcionesVerificacion.length - 1 && valor.trim() !== '') {
-            setOpcionesVerificacion([...opcionesVerificacion, '']);
+        if (indice === opcionesVerificacion.length - 1 && opcionesVerificacion[indice] === "" && valor.length === 1) {
+            setOpcionesVerificacion([...nuevasOpciones, ""]);
+        }
+    };
+
+    // Para Desplegable
+    const manejarCambioDesplegable = (indice, valor) => {
+        const nuevasOpciones = [...opcionesDesplegable];
+        nuevasOpciones[indice] = valor;
+        setOpcionesDesplegable(nuevasOpciones);
+
+        if (indice === opcionesDesplegable.length - 1 && opcionesDesplegable[indice] === "" && valor.length === 1) {
+            setOpcionesDesplegable([...nuevasOpciones, ""]);
         }
     };
 
@@ -66,11 +77,11 @@ function TypeQuestion() {
         switch (tipoPregunta) {
             case 'Pregunta':
                 return (
-                    <Form.Group className="pb-2 mb-3">
+                    <Form.Group className="">
                         <Form.Control
                             type="text"
                             placeholder="Espacio para la respuesta"
-                            className="fs-5"
+                            className="fs-5 py-3"
                             disabled
                         />
                     </Form.Group>
@@ -78,18 +89,18 @@ function TypeQuestion() {
 
             case 'Fecha':
                 return (
-                    <Form.Group className="pb-2 mb-3">
+                    <Form.Group className="">
                         <Form.Control
                             type="date"
                             placeholder="Seleccione una fecha"
-                            className="fs-5 w-50"
+                            className="fs-5 w-50 py-3"
                         />
                     </Form.Group>
                 );
 
             case 'Choise':
                 return (
-                    <Form.Group className="pb-2 mb-3 w-100">
+                    <Form.Group className="w-100">
                         {opciones.map((opcion, index) => (
                             <div
                                 key={index}
@@ -110,7 +121,6 @@ function TypeQuestion() {
                                     onChange={(e) => manejarCambioOpcion(index, e.target.value)}
                                     placeholder={`Opción ${index + 1}`}
                                     className="fs-5 border-0 bg-transparent px-0 shadow-none flex-grow-1"
-                                    style={{ boxShadow: 'none !important' }}
                                 />
 
                                 {/* Botón para eliminar (solo si hay más de una opción) */}
@@ -118,15 +128,21 @@ function TypeQuestion() {
                                     <Button
                                         variant="outline-danger"
                                         size="sm"
-                                        className="ms-3"
                                         onClick={() => eliminarOpcion(index)}
-                                        style={{
-                                            lineHeight: '1',
-                                            padding: '0.25rem 0.5rem',
-                                            fontSize: '0.875rem'
-                                        }}
+                                        className="mt-2"
                                     >
                                         ×
+                                    </Button>
+                                )}
+
+                                {opciones.length == 1 && (
+                                    <Button
+                                        variant="outline-primary"
+                                        size="sm"
+                                        onClick={agregarOpcionManual}
+                                        className="mt-2 "
+                                    >
+                                        +
                                     </Button>
                                 )}
                             </div>
@@ -136,49 +152,48 @@ function TypeQuestion() {
 
             case 'Verificación':
                 return (
-                    <Form.Group className="pb-2 mb-3 w-100">
+                    <Form.Group className="pb-2 w-100">
                         {opcionesVerificacion.map((opcion, index) => (
-                            <div
-                                key={index}
-                                className="d-flex align-items-center py-2 border-bottom w-50"
-                            >
-                                {/* Indicador visual (cuadrado) para checkboxes */}
+                            <div key={index} className="d-flex align-items-center py-2 border-bottom w-50">
+                                {/* Cuadrado para checkbox */}
                                 <div className="border me-2" style={{
                                     width: '18px',
                                     height: '18px',
                                     minWidth: '18px',
                                     borderColor: '#6c757d',
-                                    borderRadius: '3px' // Menos redondeado que el radio
+                                    borderRadius: '3px'
                                 }}></div>
 
-                                {/* Input para el texto de la opción */}
+                                {/* Input */}
                                 <Form.Control
                                     type="text"
                                     value={opcion}
                                     onChange={(e) => manejarCambioVerificacion(index, e.target.value)}
                                     placeholder={`Opción ${index + 1}`}
                                     className="fs-5 border-0 bg-transparent px-0 shadow-none flex-grow-1"
-                                    style={{ boxShadow: 'none !important' }}
                                 />
 
-                                {/* Botón para eliminar (solo si hay más de una opción) */}
+                                {/* Botón Eliminar (si hay más de 1 opción) */}
                                 {opcionesVerificacion.length > 1 && (
                                     <Button
                                         variant="outline-danger"
                                         size="sm"
+                                        onClick={() => eliminarOpcion(index, opcionesVerificacion, setOpcionesVerificacion)}
                                         className="ms-3"
-                                        onClick={() => {
-                                            const nuevasOpciones = [...opcionesVerificacion];
-                                            nuevasOpciones.splice(index, 1);
-                                            setOpcionesVerificacion(nuevasOpciones);
-                                        }}
-                                        style={{
-                                            lineHeight: '1',
-                                            padding: '0.25rem 0.5rem',
-                                            fontSize: '0.875rem'
-                                        }}
                                     >
                                         ×
+                                    </Button>
+                                )}
+
+                                {/* Botón Añadir (solo en la primera opción) */}
+                                {opcionesVerificacion.length === 1 && index === 0 && (
+                                    <Button
+                                        variant="outline-primary"
+                                        size="sm"
+                                        onClick={() => setOpcionesVerificacion([...opcionesVerificacion, ''])}
+                                        className="ms-3"
+                                    >
+                                        +
                                     </Button>
                                 )}
                             </div>
@@ -187,146 +202,171 @@ function TypeQuestion() {
                 );
 
             case 'Desplegable':
-  return (
-    <Form.Group className="pb-2 mb-3">
-      {/* Vista previa del desplegable */}
-      <Form.Select className="fs-5 mb-3" disabled>
-        <option value="">Vista previa del desplegable</option>
-        {opcionesDesplegable
-          .filter(opcion => opcion.trim() !== '')
-          .map((opcion, index) => (
-            <option key={index} value={opcion}>
-              {index + 1}. {opcion}
-            </option>
-          ))}
-      </Form.Select>
+                return (
+                    <Form.Group className="pb-2">
 
-      {/* Editor de opciones */}
-      <div className="border rounded p-3">
-        {opcionesDesplegable.map((opcion, index) => (
-          <div key={index} className="d-flex align-items-center mb-2">
-            {/* Número de opción */}
-            <span className="me-2 fw-bold" style={{ minWidth: '24px' }}>
-              {index + 1}.
-            </span>
-            
-            {/* Input para el texto de la opción */}
-            <Form.Control
-              type="text"
-              value={opcion}
-              onChange={(e) => manejarCambioDesplegable(index, e.target.value)}
-              placeholder={`Texto para la opción ${index + 1}`}
-              className="fs-5 border-0 bg-transparent px-0 shadow-none flex-grow-1"
-              style={{ boxShadow: 'none !important' }}
-            />
+                        {/* Editor de opciones */}
+                        <div className="border rounded p-3 w-50">
+                            {opcionesDesplegable.map((opcion, index) => (
+                                <div key={index} className="d-flex align-items-center mb-2">
+                                    <span className="me-2 fw-bold" style={{ minWidth: '24px' }}>
+                                        {index + 1}.
+                                    </span>
 
-            {/* Botón para eliminar (solo si hay más de una opción) */}
-            {opcionesDesplegable.length > 1 && (
-              <Button
-                variant="outline-danger"
-                size="sm"
-                className="ms-2"
-                onClick={() => {
-                  const nuevasOpciones = [...opcionesDesplegable];
-                  nuevasOpciones.splice(index, 1);
-                  setOpcionesDesplegable(nuevasOpciones);
-                }}
-                style={{
-                  lineHeight: '1',
-                  padding: '0.2rem 0.4rem',
-                  fontSize: '0.75rem'
-                }}
-              >
-                ×
-              </Button>
-            )}
-          </div>
-        ))}
-      </div>
-    </Form.Group>
-  );
+                                    <Form.Control
+                                        type="text"
+                                        value={opcion}
+                                        onChange={(e) => manejarCambioDesplegable(index, e.target.value)}
+                                        placeholder={`Texto para la opción ${index + 1}`}
+                                        className="fs-5 border-0 bg-transparent px-0 shadow-none flex-grow-1 border-bottom"
+                                    />
+
+                                    {/* Botón Eliminar (si hay más de 1 opción) */}
+                                    {opcionesDesplegable.length > 1 && (
+                                        <Button
+                                            variant="outline-danger"
+                                            size="sm"
+                                            onClick={() => eliminarOpcion(index, opcionesDesplegable, setOpcionesDesplegable)}
+                                            className="ms-2"
+                                        >
+                                            ×
+                                        </Button>
+                                    )}
+
+                                    {/* Botón Añadir (solo en la primera opción) */}
+                                    {opcionesDesplegable.length === 1 && index === 0 && (
+                                        <Button
+                                            variant="outline-primary"
+                                            size="sm"
+                                            onClick={() => setOpcionesDesplegable([...opcionesDesplegable, ''])}
+                                            className="ms-2"
+                                        >
+                                            +
+                                        </Button>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </Form.Group>
+                );
 
             case 'Archivos':
                 return (
-                    <Form.Group className="pb-2 mb-3">
-                        <div className="mb-3">
-                            <Form.Label>Tamaño máximo por archivo:</Form.Label>
-                            <Form.Select
-                                value={configArchivos.tamanoMaximo}
-                                onChange={(e) => setConfigArchivos({ ...configArchivos, tamanoMaximo: e.target.value })}
-                                className="fs-5"
-                            >
-                                <option value="1mb">1 MB</option>
-                                <option value="10mb">10 MB</option>
-                                <option value="100mb">100 MB</option>
-                            </Form.Select>
-                        </div>
+                    <Form.Group className="pb-2 mb-3 w-50">
 
-                        <div className="mb-3">
-                            <Form.Label>Cantidad máxima de archivos:</Form.Label>
-                            <Form.Select
-                                value={configArchivos.cantidadMaxima}
-                                onChange={(e) => setConfigArchivos({ ...configArchivos, cantidadMaxima: e.target.value })}
-                                className="fs-5"
-                            >
-                                <option value="1">1</option>
-                                <option value="5">5</option>
-                                <option value="10">10</option>
-                            </Form.Select>
-                        </div>
+                        <Row className='mb-3'>
+                            <Col md={6}>
+                                <Form.Label>Tamaño máximo por archivo:</Form.Label>
+                                <Form.Select
+                                    value={configArchivos.tamanoMaximo}
+                                    onChange={(e) => setConfigArchivos({ ...configArchivos, tamanoMaximo: e.target.value })}
+                                    className="fs-5"
+                                >
+                                    <option value="1mb">1 MB</option>
+                                    <option value="10mb">10 MB</option>
+                                    <option value="100mb">100 MB</option>
+                                </Form.Select>
+                            </Col>
+                            <Col md={6}>
+                                <Form.Label>Cantidad máxima de archivos:</Form.Label>
+                                <Form.Select
+                                    value={configArchivos.cantidadMaxima}
+                                    onChange={(e) => setConfigArchivos({ ...configArchivos, cantidadMaxima: e.target.value })}
+                                    className="fs-5"
+                                >
+                                    <option value="1">1</option>
+                                    <option value="5">5</option>
+                                    <option value="10">10</option>
+                                </Form.Select>
+                            </Col>
+                        </Row>
 
-                        <div className="mb-3">
+                        <Row>
                             <Form.Label>Tipos de archivo permitidos:</Form.Label>
-                            <Form.Select
-                                multiple
-                                value={configArchivos.tiposPermitidos}
-                                onChange={(e) => {
-                                    const options = [...e.target.selectedOptions];
-                                    const values = options.map(option => option.value);
-                                    setConfigArchivos({ ...configArchivos, tiposPermitidos: values });
-                                }}
-                                className="fs-5"
-                            >
-                                <option value="pdf">PDF</option>
-                                <option value="doc">Documentos (DOC/DOCX)</option>
-                                <option value="image">Imágenes (JPG/PNG)</option>
-                                <option value="video">Videos (MP4)</option>
-                                <option value="audio">Audio (MP3)</option>
-                                <option value="excel">Excel (XLS/XLSX)</option>
-                            </Form.Select>
-                        </div>
+                            <div className="d-flex flex-wrap gap-4 mt-2">
+                                {[
+                                    { value: "image", label: "JPG/PNG" },
+                                    { value: "pdf", label: "PDF" },
+                                    { value: "doc", label: "DOC" },
+                                    { value: "excel", label: "EXCEL" },
+                                    { value: "video", label: "MP4" },
+                                    { value: "audio", label: "MP3" },
 
-                        <Form.Control type="file" className="fs-5" />
+
+                                ].map((tipo) => (
+                                    <Form.Check
+                                        key={tipo.value}
+                                        type="checkbox"
+                                        id={`tipo-archivo-${tipo.value}`}
+                                        label={tipo.label}
+                                        checked={configArchivos.tiposPermitidos.includes(tipo.value)}
+                                        onChange={(e) => {
+                                            const isChecked = e.target.checked;
+                                            setConfigArchivos(prev => ({
+                                                ...prev,
+                                                tiposPermitidos: isChecked
+                                                    ? [...prev.tiposPermitidos, tipo.value]
+                                                    : prev.tiposPermitidos.filter(t => t !== tipo.value)
+                                            }));
+                                        }}
+                                        className="fs-5"
+                                    />
+                                ))}
+                            </div>
+                        </Row>
+
                     </Form.Group>
                 );
 
             case 'Escala':
                 return (
                     <Form.Group className="pb-2 mb-3">
-                        <div className="d-flex align-items-center mb-3">
-                            <Form.Control
-                                type="number"
-                                value={rangoEscala.min}
-                                onChange={(e) => setRangoEscala({ ...rangoEscala, min: parseInt(e.target.value) || 0 })}
-                                className="fs-5 me-2"
-                                style={{ width: '100px' }}
-                            />
-                            <span className="mx-2">a</span>
-                            <Form.Control
-                                type="number"
-                                value={rangoEscala.max}
-                                onChange={(e) => setRangoEscala({ ...rangoEscala, max: parseInt(e.target.value) || 10 })}
-                                className="fs-5 me-2"
-                                style={{ width: '100px' }}
-                            />
-                        </div>
-                        <div>
-                            <Form.Range
-                                min={rangoEscala.min}
-                                max={rangoEscala.max}
-                                className="w-100"
-                            />
-                        </div>
+                        <Row className="align-items-center"> {/* Añade align-items-center para vertical alignment */}
+                            {/* Columna para los números de la escala */}
+                            <Col md={1} className="pe-0"> {/* Reducido a md={2} y pe-0 para quitar padding derecho */}
+                                <div className="d-flex flex-column gap-2"> {/* Usa flex-column y gap para espaciado */}
+                                    <Form.Control
+                                        type="number"
+                                        value={rangoEscala.min}
+                                        onChange={(e) => setRangoEscala({ ...rangoEscala, min: parseInt(e.target.value) || 0 })}
+                                        className="fs-5"
+                                       
+                                    />
+                                    <div className="text-center">Al</div> {/* Texto centrado */}
+                                    <Form.Control
+                                        type="number"
+                                        value={rangoEscala.max}
+                                        onChange={(e) => setRangoEscala({ ...rangoEscala, max: parseInt(e.target.value) || 10 })}
+                                        className="fs-5"
+                                        
+                                    />
+                                </div>
+                            </Col>
+
+                            {/* Columna para las etiquetas */}
+                            <Col md={5} className="ms-3"> {/* ps-1 para pequeño padding izquierdo */}
+                                <div className="d-flex flex-column gap-5"> {/* Mismo gap que la columna numérica */}
+                                    <div className='border-bottom'>
+                                        <Form.Control
+                                            type="text"
+                                            value={rangoEscala.etiquetaMin || ''}
+                                            onChange={(e) => setRangoEscala({ ...rangoEscala, etiquetaMin: e.target.value })}
+                                            placeholder='Ej: Malo'
+                                            className="fs-5 border-0 bg-transparent px-0 shadow-none w-100"
+                                        />
+                                    </div>
+                                    <div className='border-bottom'>
+                                        <Form.Control
+                                            type="text"
+                                            value={rangoEscala.etiquetaMax || ''}
+                                            onChange={(e) => setRangoEscala({ ...rangoEscala, etiquetaMax: e.target.value })}
+                                            placeholder='Ej: Excelente'
+                                            className="fs-5 border-0 bg-transparent px-0 shadow-none w-100"
+                                        />
+                                    </div>
+                                </div>
+                            </Col>
+                        </Row>
                     </Form.Group>
                 );
 
