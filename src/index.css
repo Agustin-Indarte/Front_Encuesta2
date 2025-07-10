@@ -31,10 +31,18 @@
 
 ::-webkit-scrollbar-track {
     background: black;
+    border-radius: 0.2em;
 }
 
 ::-webkit-scrollbar-thumb {
-
-    background-image: linear-gradient(#0086E7, #0166ad, #013a63);
+    background-image: linear-gradient(to bottom, #0086E7, #026bb6, #0365ac);
+    background-size: 100% ; /* Altura fija del degradado */
+    background-repeat: no-repeat;
+    background-position: center;
     border-radius: 0.2em;
+    min-height: 50px; /* Altura mínima del thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-image: linear-gradient(to bottom, #00a1ff, #0086E7, #0166ad);
 }
