@@ -7,7 +7,7 @@
 
 .Container-AdmCard {
     background-color: var(--colorGris);
-    min-height: 160px; /* Altura mínima igual a la del Sidebar */
+    min-height: 150px; /* Altura mínima igual a la del Sidebar */
     align-items: stretch; /* Fuerza a las columnas hijos a igualar altura */
     margin: 0; /* Elimina márgenes no deseados */
     padding: 0; /* Elimina paddings no deseados */

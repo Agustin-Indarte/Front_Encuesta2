@@ -1,5 +1,4 @@
 .SideBar-Container {
-  
     width: 100%; /* Ocupa todo el ancho de la columna */
     display: flex;
     flex-direction: column;
@@ -10,7 +9,7 @@
 .btn-SideBar {
   background-color: var(--colorAzulOscuro);
   border: 1px solid white;
-  padding: 15px 0;
+  padding: 11px 0;
   transition: background-color 0.2s ease;
 }
 
@@ -21,7 +20,7 @@
 .btn-SideBarDelete {
   background-color: var(--colorAzulOscuro);
   border: 1px solid white;
-  padding: 10px 0;
+  padding: 11px 0;
   transition: background-color 0.2s ease;
 }
 
@@ -36,7 +35,7 @@
 }
 
 .icon-SideBar {
-  font-size: 1.7rem;
+  font-size: 1.5rem;
   color: white;
 }
 
