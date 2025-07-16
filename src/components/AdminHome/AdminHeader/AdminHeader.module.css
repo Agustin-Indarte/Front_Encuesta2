@@ -2,7 +2,7 @@
   --colorAzulOscuro: #003366;
 }
 
-/* CONTENEDOR PRINCIPAL */
+/* CONTENEDOR GENERAL */
 .header {
   display: flex;
   justify-content: space-between;
@@ -12,46 +12,48 @@
   margin-bottom: 1rem;
 }
 
-/* ORDENAR A LA IZQUIERDA */
-.sortOptions {
+/* ORDENAR - IZQUIERDA */
+.sortSection {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   flex-wrap: nowrap;
-  white-space: nowrap; /*  evita cortes de línea internos */
 }
 
 .sortLabel {
-  font-weight: 500;
-  margin-right: 0.5rem;
-  color: var(--colorAzulOscuro);
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
 }
 
 .sortButton {
   background-color: var(--colorAzulOscuro);
   color: white;
   border: none;
-  padding: 6px 16px;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  height: 36px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: background-color 0.2s ease;
-  min-width: 90px; /*  Evita que A-Z se achique demasiado */
-  text-align: center;
 }
 
-.sortButton:hover {
-  background-color: #002b5c; /* Azul más oscuro */
-}
-
-/* CONTENIDO DERECHA */
-.rightContent {
+/* DERECHA - CONTENEDOR GENERAL */
+.rightSection {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
   align-items: flex-end;
-  width: 100%;
+}
+
+/* GRUPO DE LOS 4 BOTONES - TODOS SUBEN JUNTOS */
+.buttonGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transform: translateY(-52px); /* SUBE el grupo completo */
 }
 
 /* BOTONES SUPERIORES */
@@ -60,36 +62,57 @@
   gap: 1rem;
 }
 
-/* BUSCADOR Y CATEGORÍAS */
+/* BOTONES INFERIORES */
 .bottomRow {
   display: flex;
   gap: 1rem;
   align-items: center;
 }
 
-/* CAMPO DE BÚSQUEDA */
-.inputGroup {
-  max-width: 300px;
-  flex: 1;
-}
-
-.inputAzul {
-  background-color: var(--colorAzulOscuro);
-  color: white !important;
-  border: none;
-}
-
-/* DROPDOWN DE CATEGORÍAS */
-.dropdown {
-  margin-left: 0;
-}
-
-/* BOTONES ESTILO AZUL OSCURO */
+/* BOTONES UNIFICADOS: MISMO ESTILO */
 .btnAzul {
   background-color: var(--colorAzulOscuro) !important;
   color: white !important;
   border: none !important;
-   font-weight: 600; 
-  text-transform: uppercase; 
-  padding: 6px 16px;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  padding: 6px 20px;
+  border-radius: 6px;
+  height: 50px;
+  min-width: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* DROPDOWN BOTÓN */
+.dropdown .dropdown-toggle {
+  background-color: var(--colorAzulOscuro) !important;
+  color: white !important;
+  border: none !important;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  height: 40px;
+  padding: 6px 20px;
+  border-radius: 6px;
+  min-width: 190px;
+  cursor: pointer;
+}
+
+/* INPUT DE BÚSQUEDA */
+.inputBuscar {
+  height: 50px;
+  min-width: 400px;
+  padding: 6px 20px;
+  border-radius: 6px;
+  border: 2px solid var(--colorAzulOscuro);
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--colorAzulOscuro);
+  outline: none;
+  box-sizing: border-box;
 }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'; 
 import AdminHeader from '../../components/AdminHome/AdminHeader/AdminHeader';
 import SurveyTable from '../../components/AdminHome/SurveyTable/SurveyTable';
 import CategoryModal from '../../components/AdminHome/CategoryModal/CategoryModal';
@@ -6,13 +6,12 @@ import SurveyModal from '../../components/AdminHome/SurveyModal/SurveyModal';
 import DeleteConfirm from '../../components/AdminHome/DeleteConfirm/DeleteConfirm';
 import styles from './Admin_Home.module.css';
 
-// Datos iniciales
 const initialSurveys = [
   { id: 1, fecha: '19/06/2025', categoria: 'Deportes', nombre: 'Mundial de Clubes' },
   { id: 2, fecha: '23/06/2025', categoria: 'Tecnología', nombre: 'Uso de inteligencia artificial' },
   { id: 3, fecha: '20/06/2025', categoria: 'Salud', nombre: 'Hábitos alimenticios' },
   { id: 4, fecha: '30/06/2025', categoria: 'Cultura', nombre: 'Preferencias musicales' },
-  { id: 5, fecha: '01/07/2025', categoria: 'Politica', nombre: 'Opinión sobre elecciones 2025' },
+  { id: 5, fecha: '01/07/2025', categoria: 'Política', nombre: 'Opinión sobre elecciones 2025' },
   { id: 6, fecha: '07/07/2025', categoria: 'Educacion', nombre: 'Satisfacción de estudiantes' },
 ];
 
@@ -21,15 +20,15 @@ const initialCategories = [
   { id: 2, fecha: '07/07/2025', nombre: 'Salud' },
   { id: 3, fecha: '21/06/2025', nombre: 'Educación' },
   { id: 4, fecha: '23/06/2025', nombre: 'Tecnología' },
-  { id: 5, fecha: '01/07/2025', nombre: 'Politica' },
+  { id: 5, fecha: '01/07/2025', nombre: 'Política' },
   { id: 6, fecha: '30/06/2025', nombre: 'Cultura' },
 ];
-
 
 function Admin_Home() {
   const [surveys, setSurveys] = useState(initialSurveys);
   const [categories, setCategories] = useState(initialCategories);
   const [filter, setFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState(null);
   const [sortedSurveys, setSortedSurveys] = useState(null);
   const [showCat, setShowCat] = useState(false);
   const [showSurvey, setShowSurvey] = useState(false);
@@ -37,46 +36,44 @@ function Admin_Home() {
   const [showDel, setShowDel] = useState(false);
   const [delMessage, setDelMessage] = useState('');
 
-  // 🔎 Buscar
-  const baseData = sortedSurveys || surveys;
-  const filtered = baseData.filter(s =>
-    s.nombre.toLowerCase().includes(filter.toLowerCase()) ||
-    s.categoria.toLowerCase().includes(filter.toLowerCase())
+  const normalize = (str) =>
+    str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+
+  const filtered = (sortedSurveys || surveys).filter(s =>
+    normalize(s.nombre).includes(normalize(filter)) &&
+    (!categoryFilter || normalize(s.categoria) === normalize(categoryFilter))
   );
 
-  // ➕ Crear encuesta
+  const handleCategorySelect = (name) => {
+    setCategoryFilter(name);
+  };
+
   const handleNewSurvey = () => {
     setSelectedSurvey(null);
     setShowSurvey(true);
   };
 
-  // ✏️ Editar encuesta
   const handleSelectSurvey = (s) => {
     setSelectedSurvey(s);
     setShowSurvey(true);
   };
 
-  // 🗑️ Eliminar encuesta
   const handleDeleteClick = (s) => {
     setDelMessage(`¿Eliminar encuesta "${s.nombre}"?`);
     setSelectedSurvey(s);
     setShowDel(true);
   };
 
-  // 🔠 Ordenar A-Z
   const handleSortAZ = () => {
     const sorted = [...surveys].sort((a, b) => a.nombre.localeCompare(b.nombre));
     setSortedSurveys(sorted);
   };
 
-  // 🕒 Ordenar por fecha
   const handleSortByDate = () => {
     const sorted = [...surveys].sort((a, b) => {
       const [d1, m1, y1] = a.fecha.split('/').map(Number);
       const [d2, m2, y2] = b.fecha.split('/').map(Number);
-      const dateA = new Date(y1, m1 - 1, d1);
-      const dateB = new Date(y2, m2 - 1, d2);
-      return dateB - dateA;
+      return new Date(y2, m2 - 1, d2) - new Date(y1, m1 - 1, d1);
     });
     setSortedSurveys(sorted);
   };
@@ -86,11 +83,13 @@ function Admin_Home() {
       <header className={styles.topbar}>
         <h1 className={styles.title}>MIS ENCUESTAS</h1>
         <AdminHeader
+          categories={categories}
           onSearch={setFilter}
           onNewSurvey={handleNewSurvey}
           onOpenCategory={() => setShowCat(true)}
           onSortAZ={handleSortAZ}
           onSortByDate={handleSortByDate}
+          onCategorySelect={handleCategorySelect}
         />
       </header>
 
@@ -104,13 +103,13 @@ function Admin_Home() {
         show={showCat}
         onHide={() => setShowCat(false)}
         categories={categories}
-        onSave={name =>
+        onSave={(name) =>
           setCategories([
             ...categories,
-            { id: Date.now(), fecha: new Date().toLocaleDateString('es-AR'), nombre: name }
+            { id: Date.now(), fecha: new Date().toLocaleDateString('es-AR'), nombre: name },
           ])
         }
-        onDelete={c => setCategories(categories.filter(x => x.id !== c.id))}
+        onDelete={(c) => setCategories(categories.filter((x) => x.id !== c.id))}
       />
 
       <SurveyModal
@@ -118,16 +117,16 @@ function Admin_Home() {
         onHide={() => setShowSurvey(false)}
         survey={selectedSurvey}
         categories={categories}
-        onSave={s => {
+        onSave={(s) => {
           if (s.id) {
-            setSurveys(surveys.map(x => x.id === s.id ? s : x));
+            setSurveys(surveys.map((x) => (x.id === s.id ? s : x)));
           } else {
             setSurveys([
               ...surveys,
-              { ...s, id: Date.now(), fecha: new Date().toLocaleDateString('es-AR') }
+              { ...s, id: Date.now(), fecha: new Date().toLocaleDateString('es-AR') },
             ]);
           }
-          setSortedSurveys(null); // resetear ordenamiento al guardar
+          setSortedSurveys(null);
         }}
       />
 
@@ -136,8 +135,8 @@ function Admin_Home() {
         onHide={() => setShowDel(false)}
         message={delMessage}
         onConfirm={() => {
-          setSurveys(surveys.filter(x => x.id !== selectedSurvey.id));
-          setSortedSurveys(null); // resetear ordenamiento al eliminar
+          setSurveys(surveys.filter((x) => x.id !== selectedSurvey.id));
+          setSortedSurveys(null);
         }}
       />
     </div>
@@ -145,5 +144,3 @@ function Admin_Home() {
 }
 
 export default Admin_Home;
-
-
