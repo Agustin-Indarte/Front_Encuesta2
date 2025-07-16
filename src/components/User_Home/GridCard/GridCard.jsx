@@ -1,30 +1,10 @@
-import React, { useEffect, useState } from 'react'
 import { Button, Card, Col, Row } from 'react-bootstrap'
 import './GridCard.css';
 
-function GridCard() {
-
-    const [surveys, setSurveys] = useState([]);
-
-    useEffect(() =>{
-
-        const loadSurveys = async () =>{
-            try {
-                const answer = await fetch('../../../../public/DataUserHome/surveys.json');
-                const data = await answer.json();
-                setSurveys(data);
-            } catch (error) {
-                console.error('Error al cargar las encuestas', error)
-            }
-        }
-
-        loadSurveys();
-
-    },[]);
-
+function GridCard({surveys}) {
 
   return (
-    <div className='container'>
+    <div className='container mb-5'>
         <Row xs={1} lg={2} className="g-4">
             {surveys.map((survey) => (
                 <Col key={survey.id}>
