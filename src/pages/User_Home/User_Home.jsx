@@ -1,8 +1,13 @@
 import React from 'react'
+import { GridCard, HeaderUserHome } from '../../components'
+
 
 function User_Home() {
   return (
-    <div>User_Home</div>
+    <div>
+      <HeaderUserHome/>
+      <GridCard/>
+    </div>
   )
 }
 

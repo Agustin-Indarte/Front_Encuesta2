@@ -1,0 +1,11 @@
+
+h1{
+  font-family: "Roboto";
+  font-weight: bolder;
+  color: var(--colorAzul)
+}
+
+.btn-buscar{
+  background-color: var(--colorAzul);
+  border: var(--colorAzul);
+}
