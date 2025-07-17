@@ -61,6 +61,7 @@ const Encuesta = () => {
           <Form.Control
             as="textarea"
             rows={3}
+            style={{ resize: "none" }}
             placeholder="Describe brevemente de qué trata"
             {...register("descripcion", {
               required: "Campo requerido",
@@ -170,16 +171,28 @@ const Encuesta = () => {
         )}
 
         <Form.Group className="mb-4">
-          <Form.Label>Puntúa esta encuesta</Form.Label>
-          <div className="rating-buttons">
-            {/* Creamos un array de 10 posicions con .from y lo observamos con watch() que viene de rhforms.-  */}
+          <Form.Label className="mb-2">Puntúa esta encuesta</Form.Label>
+          <div className="d-flex flex-wrap gap-2">
             {Array.from({ length: 10 }, (_, i) => {
               const num = i + 1;
               const selected = watch("puntuacion") === String(num);
+
               return (
                 <label
                   key={num}
-                  className={`rating-button ${selected ? "selected" : ""}`}
+                  className={`rounded-circle d-flex align-items-center justify-content-center border
+            ${
+              selected
+                ? "bg-primary text-white border-primary"
+                : "bg-light text-dark"
+            }
+            rating-circle`}
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    cursor: "pointer",
+                    transition: "all 0.2s ease-in-out",
+                  }}
                 >
                   <input
                     type="radio"
