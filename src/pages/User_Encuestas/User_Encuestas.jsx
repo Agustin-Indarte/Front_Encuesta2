@@ -56,8 +56,7 @@ const Encuesta = () => {
   };
 
   const onSubmit = (data) => {
-    console.log("📤 Datos enviados:", data);
-    alert("Encuesta enviada con éxito ✅");
+    console.log("Datos enviados:", data);
   };
 
   const opciones = ["Opción 1", "Opción 2", "Opción 3"];
@@ -115,6 +114,10 @@ const Encuesta = () => {
               maxLength: {
                 value: 40,
                 message: "Máximo 40 caracteres",
+              },
+              pattern: {
+                value: /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/u,
+                message: "Solo se permiten letras y espacios",
               },
             })}
           />
@@ -192,17 +195,26 @@ const Encuesta = () => {
 
         <Form.Group className="mb-4">
           <Form.Label>Puntúa esta encuesta</Form.Label>
-          <div className="d-flex gap-2">
-            {Array.from({ length: 10 }, (_, i) => i + 1).map((num) => (
-              <Form.Check
-                key={num}
-                inline
-                type="radio"
-                label={num}
-                value={num}
-                {...register("puntuacion", { required: true })}
-              />
-            ))}
+          <div className="rating-buttons">
+            {/* Creamos un array de 10 posicions con .from y lo observamos con watch() que viene de rhforms.-  */}
+            {Array.from({ length: 10 }, (_, i) => {
+              const num = i + 1;
+              const selected = watch("puntuacion") === String(num);
+              return (
+                <label
+                  key={num}
+                  className={`rating-button ${selected ? "selected" : ""}`}
+                >
+                  <input
+                    type="radio"
+                    value={num}
+                    {...register("puntuacion", { required: true })}
+                    style={{ display: "none" }}
+                  />
+                  {num}
+                </label>
+              );
+            })}
           </div>
         </Form.Group>
 

@@ -48,22 +48,22 @@
 
 .rating-button {
   padding: 8px 14px;
-  border: 2px solid #007bff;
+  border: 1px solid var(--colorAzul);
   border-radius: 50%;
   cursor: pointer;
   font-weight: bold;
   background-color: white;
-  color: #007bff;
+  color: var(--colorAzul);
   transition: all 0.2s ease-in-out;
 }
 
 .rating-button:hover {
-  background-color: #007bff;
+  background-color: var(--colorAzulOscuro);
   color: white;
 }
 
 .rating-button.selected {
-  background-color: #007bff;
+  background-color: var(--colorAzul);
   color: white;
-  border-color: #0056b3;
+  border-color: var(--colorGris);
 }
