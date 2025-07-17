@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Form, Button, Container } from "react-bootstrap";
+import { handleFileChange } from "../../utils/handleFileChange";
 import "./userEncuesta.css";
 
 const Encuesta = () => {
+  const [previewUrl, setPreviewUrl] = useState(null);
   const {
     register,
     handleSubmit,
@@ -24,36 +26,6 @@ const Encuesta = () => {
       puntuacion: "5",
     },
   });
-
-  const [previewUrl, setPreviewUrl] = useState(null);
-  const [fileType, setFileType] = useState(null);
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-
-    if (file) {
-      const allowedTypes = [
-        "image/jpeg",
-        "image/jpg",
-        "image/png",
-        "image/webp",
-      ];
-
-      if (!allowedTypes.includes(file.type)) {
-        alert("Solo se permiten archivos JPG, JPEG, PNG o WEBP");
-        e.target.value = null;
-        setPreviewUrl(null);
-        setFileType(null);
-        return;
-      }
-
-      setValue("archivo", file, { shouldValidate: true });
-
-      const fileURL = URL.createObjectURL(file);
-      setPreviewUrl(fileURL);
-      setFileType("image");
-    }
-  };
 
   const onSubmit = (data) => {
     console.log("Datos enviados:", data);
@@ -181,15 +153,19 @@ const Encuesta = () => {
           <Form.Control
             type="file"
             accept=".jpg,.jpeg,.png,.webp"
-            onChange={handleFileChange}
+            onChange={(e) => handleFileChange(e, setValue, setPreviewUrl)}
           />
           {errors.archivo && <p className="text-danger">Archivo requerido</p>}
         </Form.Group>
 
         {/* Preview de la imagen, si es video no mostramos nada */}
-        {previewUrl && fileType === "image" && (
+        {previewUrl && (
           <div className="mb-3">
-            <img src={previewUrl} alt="Preview" className="img-preview" />
+            <img
+              src={previewUrl}
+              alt="Imagen de la encuesta"
+              className="img-preview"
+            />
           </div>
         )}
 
