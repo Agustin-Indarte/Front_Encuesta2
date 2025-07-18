@@ -1,9 +1,10 @@
-import { useEffect,useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import { SideBar, AdmCard } from '../../../components/index'
 import './admGridCard.css'
 
-const AdmGridCards = ({ cards, activeCardId, onAddCard, onSetActive, onDeleteCard }) => {
+const AdmGridCards = ({ cards, activeCardId, onSetCardType, onSetActive, onDeleteCard }) => {
+
 
   // Referencia al contenedor del scroll
   const gridContainerRef = useRef(null);
@@ -37,31 +38,43 @@ const AdmGridCards = ({ cards, activeCardId, onAddCard, onSetActive, onDeleteCar
 
 
   return (
-    <div 
-    className='AdmGridCard'
-    ref={gridContainerRef} // Asignamos la referencia 
+    <div
+      className='AdmGridCard'
+      ref={gridContainerRef} // Asignamos la referencia 
     >
-      {cards.map((card) => (
-        <Row
-          key={card.id}
-          className="Container-AdmCard d-flex border mb-3 ps-2 py-3 rounded shadow-md"
-          onClick={() => onSetActive(card.id)}
-        >
-          <Col md={1} className='sidebar-col mx-3'>
-            {activeCardId === card.id && (
-              <SideBar
-                onSelectType={(type) => handleSelectType(type, card.id)}
-                activeType={card.type}
-                onDeleteCard={() => onDeleteCard(card.id)}
-                isFirstTextCard={cards[0]?.id === card.id && card.type === "text"}
-              />
-            )}
-          </Col>
-          <Col md={11} className='card-col '>
-            <AdmCard card={card} isActive={activeCardId === card.id} />
-          </Col>
-        </Row>
-      ))}
+      {cards.map((card, index) => {
+        const isFirst = index === 0;
+        const isEmpty = card.type === null;
+        const isActive = activeCardId === card.id;
+
+        const showSidebar = isEmpty || (!isFirst && isActive); // 👈 solo si es vacía o activa y no es la primera
+
+        return (
+          <Row
+            key={card.id}
+            className="Container-AdmCard d-flex border mb-3 ps-2 py-3 rounded shadow-md"
+            onClick={() => {
+              if (!isEmpty && !isFirst) {
+                onSetActive(card.id);
+              }
+            }}
+          >
+            <Col md={1} className="sidebar-col mx-3">
+              {showSidebar && (
+                <SideBar
+                  onSelectType={(type) => onSetCardType(type, card.id)}
+                  activeType={card.type}
+                  onDeleteCard={() => onDeleteCard(card.id)}
+                  isFirstTextCard={false}
+                />
+              )}
+            </Col>
+            <Col md={10} className="card-col">
+              <AdmCard card={card} isActive={isActive} />
+            </Col>
+          </Row>
+        );
+      })}
     </div>
   );
 };

@@ -392,13 +392,13 @@ function TypeQuestion() {
                         <Form.Select
                             value={tipoPregunta}
                             onChange={manejarCambioTipo}
-                            className="InputEncuesta fs-4"
+                            className="InputEncuesta fs-5 py-3"
                         >
                             <option value="">Seleccionar Tipo</option>
                             <option value="Pregunta">Pregunta</option>
                             <option value="Fecha">Fecha</option>
-                            <option value="Choise">Opción múltiple</option>
-                            <option value="Verificación">Casillas de verificación</option>
+                            <option value="Choise">Choise</option>
+                            <option value="Verificación">Verificación</option>
                             <option value="Desplegable">Desplegable</option>
                             <option value="Archivos">Archivos</option>
                             <option value="Escala">Escala</option>

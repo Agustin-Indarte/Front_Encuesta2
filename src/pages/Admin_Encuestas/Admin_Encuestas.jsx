@@ -5,64 +5,64 @@ function Admin_Encuestas() {
   const initialized = useRef(false);
   const [cards, setCards] = useState([]);
   const [activeCardId, setActiveCardId] = useState(null);
-  const [pendingActiveId, setPendingActiveId] = useState(null);
 
-  // Agrega una card por defecto al cargar la página
   useEffect(() => {
     if (!initialized.current && cards.length === 0) {
-      addCard("text");
+      setCards([
+        { id: crypto.randomUUID(), type: 'text', content: {} },
+        { id: crypto.randomUUID(), type: null, content: {} }
+      ]);
       initialized.current = true;
     }
   }, [cards]);
 
-  // Efecto para sincronizar el activeCardId cuando se agrega una nueva card
-  useEffect(() => {
-    if (pendingActiveId && cards.some(card => card.id === pendingActiveId)) {
-      setActiveCardId(pendingActiveId);
-      setPendingActiveId(null);
-    }
-  }, [cards, pendingActiveId]);
-
-  const addCard = (type, afterId = null) => {
-    const newCard = {
-      id: crypto.randomUUID(),
-      type,
-      content: {}
-    };
-
+  const setCardType = (type, cardId) => {
     setCards(prevCards => {
-      const idx = prevCards.findIndex(card => card.id === afterId);
-      const newCards =
-        idx >= 0
-          ? [...prevCards.slice(0, idx + 1), newCard, ...prevCards.slice(idx + 1)]
-          : [...prevCards, newCard];
-      return newCards;
+      const updatedCards = prevCards.map(card =>
+        card.id === cardId
+          ? { ...card, type }
+          : card
+      );
+
+      const hasEmptyCard = updatedCards.some(card => card.type === null);
+
+      if (!hasEmptyCard) {
+        updatedCards.push({
+          id: crypto.randomUUID(),
+          type: null,
+          content: {}
+        });
+      }
+
+      return updatedCards;
     });
-    setPendingActiveId(newCard.id); // Ahora se activa cuando la card ya existe en el array
+
+    // Activamos directamente (más confiable)
+    setActiveCardId(cardId);
   };
 
   const deleteCard = (id) => {
- 
-  setCards(prevCards => {
-    const idx = prevCards.findIndex(c => c.id === id);
-    const newCards = prevCards.filter(card => card.id !== id);
 
-    if (newCards.length === 0) {
-      const newCard = { id: crypto.randomUUID(), type: "text", content: {} };
-      setTimeout(() => setActiveCardId(newCard.id), 0);
-      return [newCard];
-    }
+    setCards(prevCards => {
+      const idx = prevCards.findIndex(c => c.id === id);
+      const newCards = prevCards.filter(card => card.id !== id);
 
-    if (activeCardId === id) {
-      const prevCard = prevCards[idx - 1];
-      const nextCard = prevCards[idx + 1];
-      const fallbackId = prevCard?.id || nextCard?.id || newCards[0]?.id;
-      setTimeout(() => setActiveCardId(fallbackId), 0);
-    }
+      if (newCards.length === 0) {
+        const newCard = { id: crypto.randomUUID(), type: "text", content: {} };
+        setTimeout(() => setActiveCardId(newCard.id), 0);
+        return [newCard];
+      }
 
-    return newCards;
-  });
-};
+      if (activeCardId === id) {
+        const prevCard = prevCards[idx - 1];
+        const nextCard = prevCards[idx + 1];
+        const fallbackId = prevCard?.id || nextCard?.id || newCards[0]?.id;
+        setTimeout(() => setActiveCardId(fallbackId), 0);
+      }
+
+      return newCards;
+    });
+  };
 
 
   return (
@@ -98,19 +98,17 @@ function Admin_Encuestas() {
 
         {/* GRILLA DE CARDS */}
         <Row className="w-100 mt-2">
-          <div>
-            <div>
-              <AdmGridCards
-                cards={cards}
-                activeCardId={activeCardId}
-                onAddCard={addCard}
-                onSetActive={setActiveCardId}
-                onDeleteCard={deleteCard}
-              />
-            </div>
-          </div>
-
-
+          <Col md={2} />  {/* Espacio vacío 25% */}
+          <Col md={7}>    {/* Contenedor centrado 50% */}
+            <AdmGridCards
+              cards={cards}
+              activeCardId={activeCardId}
+              onSetActive={setActiveCardId}
+              onDeleteCard={deleteCard}
+              onSetCardType={setCardType}
+            />
+          </Col>
+          <Col md={3} />  {/* Espacio vacío 25% */}
         </Row>
 
         {/* BOTÓN PUBLICAR */}
