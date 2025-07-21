@@ -7,7 +7,7 @@ import {Inicio,Login,Register, Admin_Encuestas,Admin_Home,User_Encuestas,User_Ho
 
   function App() {
     return (
-        <BrowserRouter>
+       // <BrowserRouter>
 
         <Routes>
 
@@ -22,7 +22,7 @@ import {Inicio,Login,Register, Admin_Encuestas,Admin_Home,User_Encuestas,User_Ho
 
         <Route path="*" element={<Error404 />}></Route>
         </Routes>
-        </BrowserRouter>
+        // </BrowserRouter>
         
   );
 }
