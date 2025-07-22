@@ -3,7 +3,14 @@ import { Col, Row } from 'react-bootstrap';
 import { SideBar, AdmCard } from '../../../components/index'
 import './admGridCard.css'
 
-const AdmGridCards = ({ cards, activeCardId, onSetCardType, onSetActive, onDeleteCard }) => {
+const AdmGridCards = ({ 
+  cards, 
+  activeCardId, 
+  onSetActive, 
+  onDeleteCard, 
+  onSetCardType, 
+  onUpdateContent // Asegúrate de recibir esta prop
+}) => {
 
 
   // Referencia al contenedor del scroll
@@ -70,7 +77,7 @@ const AdmGridCards = ({ cards, activeCardId, onSetCardType, onSetActive, onDelet
               )}
             </Col>
             <Col md={10} className="card-col">
-              <AdmCard card={card} isActive={isActive} />
+              <AdmCard card={card} isActive={isActive} onUpdateContent={onUpdateContent} />
             </Col>
           </Row>
         );

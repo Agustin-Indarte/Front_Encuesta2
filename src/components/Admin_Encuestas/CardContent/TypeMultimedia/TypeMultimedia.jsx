@@ -1,17 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Row, Col } from 'react-bootstrap';
 
-function TypeMultimedia() {
-    const [fileUrl, setFileUrl] = useState(null);
-    const [fileType, setFileType] = useState(null); // Nuevo estado para el tipo de archivo
+function TypeMultimedia({ content, onUpdate }) {
+    const [mediaData, setMediaData] = useState({
+        caption: content?.caption || '',
+        fileUrl: content?.fileUrl || null,
+        fileType: content?.fileType || null,
+        file: null
+    });
+
+    useEffect(() => {
+        // Actualizar cuando cambien los datos
+        onUpdate(mediaData);
+    }, [mediaData]);
 
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
             const url = URL.createObjectURL(file);
-            setFileUrl(url);
-            setFileType(file.type.split('/')[0]); // Guardamos el tipo (image o video)
+            const type = file.type.split('/')[0]; // 'image' o 'video'
+            setMediaData(prev => ({
+                ...prev,
+                fileUrl: url,
+                fileType: type,
+                file: file
+            }));
         }
+    };
+
+    const handleCaptionChange = (e) => {
+        setMediaData(prev => ({
+            ...prev,
+            caption: e.target.value
+        }));
     };
 
     return (
@@ -21,8 +42,11 @@ function TypeMultimedia() {
                     <Form.Group className="border-bottom pb-2 mb-3">
                         <Form.Control
                             type="text"
-                            placeholder="Multimedia"
+                            placeholder="Descripción del multimedia"
                             className="fs-3 fw-medium border-0 bg-transparent px-0 shadow-none"
+                            value={mediaData.caption}
+                            onChange={handleCaptionChange}
+                            name="caption"
                         />
                     </Form.Group>
                 </Col>
@@ -38,13 +62,13 @@ function TypeMultimedia() {
                 </Col>
             </Row>
 
-            {/* Vista previa del multimedia */}
+            {/* Vista previa */}
             <Row className="mt-3">
                 <Col>
-                    {fileUrl && (
-                        fileType === 'image' ? (
+                    {mediaData.fileUrl && (
+                        mediaData.fileType === 'image' ? (
                             <img
-                                src={fileUrl}
+                                src={mediaData.fileUrl}
                                 alt="Vista previa"
                                 className="img-fluid rounded"
                                 style={{ maxHeight: '500px' }}
@@ -52,7 +76,7 @@ function TypeMultimedia() {
                         ) : (
                             <video
                                 controls
-                                src={fileUrl}
+                                src={mediaData.fileUrl}
                                 className="img-fluid rounded"
                                 style={{ maxHeight: '800px' }}
                             />
