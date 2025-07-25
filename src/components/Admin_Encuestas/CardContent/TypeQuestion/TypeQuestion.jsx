@@ -32,28 +32,13 @@ function TypeQuestion({ content, onUpdate }) {
         setQuestionData(prev => ({
             ...prev,
             questionType: e.target.value,
-            options: e.target.value === 'Choise' || 
-                    e.target.value === 'Verificación' || 
-                    e.target.value === 'Desplegable' ? [''] : []
+            options: e.target.value === 'Choice' ||
+                e.target.value === 'Verificación' ||
+                e.target.value === 'Desplegable' ? [''] : []
         }));
     };
 
-    const handleOptionChange = (index, value) => {
-        const newOptions = [...questionData.options];
-        newOptions[index] = value;
-        
-        setQuestionData(prev => ({
-            ...prev,
-            options: newOptions
-        }));
-    };
 
-    const addOption = () => {
-        setQuestionData(prev => ({
-            ...prev,
-            options: [...prev.options, '']
-        }));
-    };
 
     const removeOption = (index) => {
         if (questionData.options.length > 1) {
@@ -65,40 +50,70 @@ function TypeQuestion({ content, onUpdate }) {
         }
     };
 
+    const handleOptionChange = (index, value) => {
+        const newOptions = [...questionData.options];
+        newOptions[index] = value;
+
+        // Si es el último campo, estaba vacío y ahora tiene al menos 1 carácter, agregamos uno nuevo
+        if (index === questionData.options.length - 1 && questionData.options[index] === "" && value.length === 1) {
+            newOptions.push(""); // Agregamos el nuevo campo en la misma actualización
+        }
+
+        setQuestionData({
+            ...questionData,
+            options: newOptions
+        });
+    };
+
+    const addOption = () => {
+        setQuestionData({
+            ...questionData,
+            options: [...questionData.options, ""]
+        });
+    };
+
+
     const renderOptions = () => {
         switch (questionData.questionType) {
-            case 'Choise':
+            // Renderizado (simplificado)
+            case 'Choice':
             case 'Verificación':
             case 'Desplegable':
                 return (
-                    <div className="mt-3">
+                    <div className="mt-1">
                         {questionData.options.map((option, index) => (
-                            <div key={index} className="d-flex align-items-center mb-2">
-                                <Form.Control
-                                    type="text"
-                                    value={option}
-                                    onChange={(e) => handleOptionChange(index, e.target.value)}
-                                    placeholder={`Opción ${index + 1}`}
-                                    className="me-2"
-                                />
-                                <Button 
-                                    variant="outline-danger" 
-                                    size="sm" 
-                                    onClick={() => removeOption(index)}
-                                >
-                                    ×
-                                </Button>
-                            </div>
+                            <Row key={index} className="d-flex align-items-center mb-2">
+                                <Col md={8}>
+                                    <Form.Control
+                                        type="text"
+                                        value={option}
+                                        onChange={(e) => handleOptionChange(index, e.target.value)}
+                                        placeholder={`Opción ${index + 1}`}
+                                        className="me-2"
+                                    />
+
+                                </Col>
+                                <Col md={4}>
+                                    <Button
+                                        variant="outline-danger"
+                                        size="sm"
+                                        onClick={() => removeOption(index)}
+                                        disabled={questionData.options.length <= 1}
+                                    >
+                                        ×
+                                    </Button>
+                                </Col>
+
+                            </Row>
                         ))}
                         <Button variant="outline-primary" size="sm" onClick={addOption}>
                             + Añadir opción
                         </Button>
                     </div>
                 );
-            
             case 'Escala':
                 return (
-                    <div className="mt-3">
+                    <div className="mt-1">
                         <Row>
                             <Col md={3}>
                                 <Form.Label>Mínimo</Form.Label>
@@ -149,10 +164,10 @@ function TypeQuestion({ content, onUpdate }) {
                         </Row>
                     </div>
                 );
-            
+
             case 'Archivos':
                 return (
-                    <div className="mt-3">
+                    <div className="mt-1">
                         <Row>
                             <Col md={6}>
                                 <Form.Label>Tamaño máximo (MB)</Form.Label>
@@ -185,7 +200,37 @@ function TypeQuestion({ content, onUpdate }) {
                         </Row>
                     </div>
                 );
-            
+
+                case 'Fecha':
+                return (
+                    <div className="mt-1">
+                        <Row>
+                            <Col md={6}>
+                                <Form.Control disabled
+                                    type="date"
+                                />
+                            </Col>
+                            
+                        </Row>
+                    </div>
+                );
+
+                case 'Pregunta':
+                return (
+                    <div className="mt-1">
+                        <Row>
+                            <Col md={12}>
+                                <Form.Control disabled
+                                className='py-4'
+                                    type="text"
+                                    placeholder='Espacio para la respuesta'
+                                />
+                            </Col>
+                            
+                        </Row>
+                    </div>
+                );
+
             default:
                 return null;
         }
@@ -199,7 +244,7 @@ function TypeQuestion({ content, onUpdate }) {
                         <Form.Control
                             type="text"
                             placeholder="Pregunta"
-                            className="fs-3 fw-medium border-0 bg-transparent px-0 shadow-none"
+                            className="fs-4 fw-medium border-0 bg-transparent px-0 shadow-none"
                             value={questionData.questionText}
                             onChange={handleQuestionChange}
                         />
@@ -210,16 +255,16 @@ function TypeQuestion({ content, onUpdate }) {
                         <Form.Select
                             value={questionData.questionType}
                             onChange={handleTypeChange}
-                            className="fs-5 py-3"
+                            className="fs-4 py-2"
                         >
-                            <option value="">Seleccionar Tipo</option>
-                            <option value="Pregunta">Respuesta corta</option>
+                            <option value="">Tipo</option>
                             <option value="Fecha">Fecha</option>
-                            <option value="Choise">Opción múltiple</option>
-                            <option value="Verificación">Casillas de verificación</option>
-                            <option value="Desplegable">Lista desplegable</option>
-                            <option value="Archivos">Subida de archivos</option>
+                            <option value="Pregunta">Respuesta</option>
+                           <option value="Verificación">Verificación</option> 
+                            <option value="Desplegable">Desplegable</option>
+                            <option value="Choice">Choice</option>
                             <option value="Escala">Escala</option>
+
                         </Form.Select>
                     </Form.Group>
                 </Col>
