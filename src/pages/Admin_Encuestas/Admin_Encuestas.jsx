@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { Navbar, AdmGridCards } from '../../components';
 import { Row, Form, Col, Button } from 'react-bootstrap';
+import { FaUpload } from "react-icons/fa";
+import './Admin_Encuestas.css'
+
 
 function Admin_Encuestas() {
   const initialized = useRef(false);
@@ -35,8 +38,8 @@ function Admin_Encuestas() {
 
       return {
         ...prev,
-        cards: hasEmptyCard 
-          ? updatedCards 
+        cards: hasEmptyCard
+          ? updatedCards
           : [...updatedCards, { id: crypto.randomUUID(), type: null, content: {} }]
       };
     });
@@ -88,98 +91,112 @@ function Admin_Encuestas() {
     }
 
     // 1. Filtrar cards no definidas y limpiar el contenido
-  const cardsFiltradas = encuestaData.cards
-    .filter(card => card.type) // Eliminar cards sin tipo
-    .map(card => {
-      // Clonar la card para no modificar el estado directamente
-      const cleanedCard = { 
-        id: card.id,
-        type: card.type,
-        content: { ...card.content } 
-      };
+    const cardsFiltradas = encuestaData.cards
+      .filter(card => card.type) // Eliminar cards sin tipo
+      .map(card => {
+        // Clonar la card para no modificar el estado directamente
+        const cleanedCard = {
+          id: card.id,
+          type: card.type,
+          content: { ...card.content }
+        };
 
-      // Limpieza específica para cada tipo de card
-      switch(card.type) {
-        case 'text':
-          // Asegurar que title y description existan
-          cleanedCard.content = {
-            title: card.content.title || '',
-            description: card.content.description || ''
-          };
-          break;
+        // Limpieza específica para cada tipo de card
+        switch (card.type) {
+          case 'text':
+            // Asegurar que title y description existan
+            cleanedCard.content = {
+              title: card.content.title || '',
+              description: card.content.description || ''
+            };
+            break;
 
-        case 'question':
-          // Estructura base para preguntas
-          const baseQuestion = {
-            questionText: card.content.questionText || '',
-            questionType: card.content.questionType || ''
-          };
+          case 'question':
+            // Estructura base para preguntas
+            const baseQuestion = {
+              questionText: card.content.questionText || '',
+              questionType: card.content.questionType || ''
+            };
 
-          // Campos adicionales según el tipo de pregunta
-          switch(card.content.questionType) {
-            case 'Choise':
-            case 'Verificación':
-            case 'Desplegable':
-              baseQuestion.options = card.content.options || [];
-              break;
+            // Campos adicionales según el tipo de pregunta
+            switch (card.content.questionType) {
+              case 'Choise':
+              case 'Verificación':
+              case 'Desplegable':
+                baseQuestion.options = card.content.options || [];
+                break;
 
-            case 'Escala':
-              baseQuestion.min = card.content.min || 1;
-              baseQuestion.max = card.content.max || 5;
-              baseQuestion.labelMin = card.content.labelMin || '';
-              baseQuestion.labelMax = card.content.labelMax || '';
-              break;
+              case 'Escala':
+                baseQuestion.min = card.content.min || 1;
+                baseQuestion.max = card.content.max || 5;
+                baseQuestion.labelMin = card.content.labelMin || '';
+                baseQuestion.labelMax = card.content.labelMax || '';
+                break;
 
-            case 'Archivos':
-              baseQuestion.fileConfig = {
-                maxSize: card.content.fileConfig?.maxSize || '10MB',
-                maxFiles: card.content.fileConfig?.maxCount || 1,
-                allowedTypes: card.content.fileConfig?.allowedTypes || ['pdf']
-              };
-              break;
-          }
+              case 'Archivos':
+                baseQuestion.fileConfig = {
+                  maxSize: card.content.fileConfig?.maxSize || '10MB',
+                  maxFiles: card.content.fileConfig?.maxCount || 1,
+                  allowedTypes: card.content.fileConfig?.allowedTypes || ['pdf']
+                };
+                break;
+            }
 
-          cleanedCard.content = baseQuestion;
-          break;
+            cleanedCard.content = baseQuestion;
+            break;
 
-        case 'multimedia':
-          cleanedCard.content = {
-            fileUrl: card.content.fileUrl || '',
-            fileType: card.content.fileType || '',
-            caption: card.content.caption || ''
-          };
-          break;
-      }
+          case 'multimedia':
+            cleanedCard.content = {
+              fileUrl: card.content.fileUrl || '',
+              fileType: card.content.fileType || '',
+              caption: card.content.caption || ''
+            };
+            break;
+        }
 
-      return cleanedCard;
-    });
+        return cleanedCard;
+      });
 
-  // 2. Crear el objeto final de la encuesta
-  const encuestaCompleta = {
-    nombre: encuestaData.nombre || '',
-    estado: encuestaData.estado || '',
-    categoria: encuestaData.categoria || '',
-    fechaCreacion: new Date().toISOString(),
-    cards: cardsFiltradas
+    // 2. Crear el objeto final de la encuesta
+    const encuestaCompleta = {
+      nombre: encuestaData.nombre || '',
+      estado: encuestaData.estado || '',
+      categoria: encuestaData.categoria || '',
+      fechaCreacion: new Date().toISOString(),
+      cards: cardsFiltradas
+    };
+
+    // 3. Convertir a JSON y descargar
+    const dataStr = JSON.stringify(encuestaCompleta, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+    const nombreArchivo = `encuesta_${encuestaData.nombre || 'sin_nombre'}_${new Date().toISOString().slice(0, 10)}.json`;
+
+    // Crear enlace de descarga
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', nombreArchivo);
+    linkElement.click();
   };
 
-  // 3. Convertir a JSON y descargar
-  const dataStr = JSON.stringify(encuestaCompleta, null, 2);
-  const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-  const nombreArchivo = `encuesta_${encuestaData.nombre || 'sin_nombre'}_${new Date().toISOString().slice(0, 10)}.json`;
-
-  // Crear enlace de descarga
-  const linkElement = document.createElement('a');
-  linkElement.setAttribute('href', dataUri);
-  linkElement.setAttribute('download', nombreArchivo);
-  linkElement.click();
-};
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setEncuestaData({
+        ...encuestaData,
+        imagen: file
+      });
+    }
+  };
 
   return (
     <>
       <Navbar />
       <div className="Container-Page">
+
         <Row className="w-100 mb-4">
+          <Col md={3} className='d-flex align-items-center'>
+            <h2 className='title-page mb-0'>CREAR ENCUESTA</h2>
+          </Col>
           <Col md={3}>
             <Form.Group>
               <Form.Control
@@ -193,6 +210,8 @@ function Admin_Encuestas() {
               />
             </Form.Group>
           </Col>
+
+
           <Col md={3}>
             <Form.Select
               name="estado"
@@ -219,20 +238,13 @@ function Admin_Encuestas() {
               <option value="salud">Salud</option>
             </Form.Select>
           </Col>
-          <Col md={3}>
-            <Button
-              className='w-100 fs-4 fw-bold'
-              onClick={handlePublicar}
-              disabled={!encuestaData.nombre || !encuestaData.estado || !encuestaData.categoria}
-            >
-              Publicar
-            </Button>
-          </Col>
+
+
         </Row>
 
-        <Row className="w-100 mt-2">
-          <Col md={2} />
-          <Col md={7}>
+        <Row className="w-100 mt-2 d-flex justify-content-end align-items-end">
+
+          <Col md={9}>
             <AdmGridCards
               cards={encuestaData.cards}
               activeCardId={activeCardId}
@@ -242,7 +254,53 @@ function Admin_Encuestas() {
               onUpdateContent={updateCardContent}
             />
           </Col>
-          <Col md={3} />
+
+          <Col md={3}>
+
+            <Form.Group controlId="formFile" className="mb-3">
+              <div className="input-group">
+                {/* Botón azul con ícono de subida (React Icons) */}
+                <label
+                  className="input-group-text bg-primary text-white fs-4"
+                  htmlFor="customFileInput"
+                  style={{ cursor: "pointer" }}
+                >
+                  <FaUpload /> {/* Ícono de React Icons */}
+                </label>
+
+                {/* Input de archivo oculto */}
+                <input
+                  type="file"
+                  id="customFileInput"
+                  accept="image/*"
+                  className="form-control fs-4 d-none"
+                  name="imagen"
+                  onChange={handleFileChange}
+                  required
+                />
+
+                {/* Caja que muestra el nombre del archivo */}
+                <input
+                  type="text"
+                  className="form-control fs-4"
+                  placeholder="Seleccionar archivo"
+                  value={encuestaData.imagen?.name || ""} // Usamos optional chaining por seguridad
+                  onClick={() => document.getElementById('customFileInput').click()}
+                  readOnly
+                  style={{ cursor: "pointer" }}
+                />
+              </div>
+            </Form.Group>
+
+            <Button
+              className='w-100 fs-4 fw-bold'
+              onClick={handlePublicar}
+              disabled={!encuestaData.nombre || !encuestaData.estado || !encuestaData.categoria}
+            >
+              Publicar
+            </Button>
+          </Col>
+
         </Row>
       </div>
     </>

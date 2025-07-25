@@ -259,6 +259,7 @@ function TypeQuestion({ content, onUpdate }) {
                         >
                             <option value="">Tipo</option>
                             <option value="Fecha">Fecha</option>
+                            <option value="Archivos">Archivos</option>
                             <option value="Pregunta">Respuesta</option>
                            <option value="Verificación">Verificación</option> 
                             <option value="Desplegable">Desplegable</option>
