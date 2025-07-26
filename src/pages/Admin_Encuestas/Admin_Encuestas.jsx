@@ -242,7 +242,7 @@ function Admin_Encuestas() {
 
         </Row>
 
-        <Row className="w-100 mt-2 d-flex justify-content-end align-items-end">
+        <Row className="w-100 mt-2 d-flex justify-content-end align-items-end ">
 
           <Col md={9}>
             <AdmGridCards
@@ -283,7 +283,7 @@ function Admin_Encuestas() {
                 <input
                   type="text"
                   className="form-control fs-4"
-                  placeholder="Seleccionar archivo"
+                  placeholder="Subir portada"
                   value={encuestaData.imagen?.name || ""} // Usamos optional chaining por seguridad
                   onClick={() => document.getElementById('customFileInput').click()}
                   readOnly

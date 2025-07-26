@@ -18,10 +18,6 @@ const AdmGridCards = ({
   // Guardamos el número previo de cards para comparar
   const prevCardsLengthRef = useRef(cards.length);
 
-  // Cuando se selecciona un tipo, agrega una card nueva después de la actual
-  const handleSelectType = (type, cardId) => {
-    onAddCard(type, cardId);
-  };
 
   // Efecto para el auto-scroll
   useEffect(() => {

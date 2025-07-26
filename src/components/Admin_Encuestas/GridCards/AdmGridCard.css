@@ -1,5 +1,6 @@
 .AdmGridCard {
     height: 70vh; 
+    max-height: 70vh;
     overflow-y: auto;
     padding-inline-end: 1rem;
     border-radius: 12px;
@@ -7,7 +8,7 @@
 
 .Container-AdmCard {
     background-color: var(--colorGris);
-    min-height: 150px; /* Altura mínima igual a la del Sidebar */
+    min-height: 140px; /* Altura mínima igual a la del Sidebar */
     align-items: stretch; /* Fuerza a las columnas hijos a igualar altura */
     margin: 0; /* Elimina márgenes no deseados */
     padding: 0; /* Elimina paddings no deseados */
