@@ -1,0 +1,25 @@
+/* src/components/AdminHome/DeleteConfirm.module.css */
+
+.header {
+  background-color: var(--colorAzul);
+  color: white;
+}
+
+.body {
+  font-size: 1rem;
+  color: #333;
+}
+
+.footer > .btn-danger {
+  --bs-btn-bg: var(--colorRojo);
+  --bs-btn-border-color: var(--colorRojo);
+}
+
+.footer > .btn-danger:hover {
+  --bs-btn-bg: var(--colorRojoOscuro);
+  --bs-btn-border-color: var(--colorRojoOscuro);
+}
+
+.footer > .btn-secondary {
+  filter: brightness(0.9);
+}

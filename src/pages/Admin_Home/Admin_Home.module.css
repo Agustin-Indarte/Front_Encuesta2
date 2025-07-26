@@ -1,0 +1,18 @@
+.container {
+  padding: 1rem;
+  background-color: white;
+}
+
+.topbar {
+  margin-bottom: 1rem;
+}
+
+
+
+.title {
+  margin-top: 2rem;      /* Esto baja el título */
+  font-weight: 800;       /* Esto hace la letra más gordita */
+  font-size: 3rem;        /* Opcional: podés subir un poco el tamaño también */
+  color: var(--colorAzul);
+}
+
