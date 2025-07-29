@@ -1,0 +1,38 @@
+/* SurveyTable.module.css */
+.tableContainer {
+  height: 430px; /* Altura fija del contenedor */
+  max-height: 430px;
+  overflow-y: auto;
+  border: 1px solid #dee2e6;
+  border-radius: 0.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+
+.thead {
+  background-color: var(--colorAzul);
+  color: white;
+  position: sticky;
+  top: 0;
+  flex-shrink: 0; /* Evita que el encabezado se reduzca */
+}
+
+.tableBody {
+  flex-grow: 1; /* Hace que el cuerpo ocupe todo el espacio restante */
+  overflow-y: auto; /* Permite scroll dentro del cuerpo si es necesario */
+}
+
+/* Opcional: altura fija para las filas */
+.tableBody tr {
+  height: 50px; /* Ajusta este valor según necesites */
+}
+
+.even {
+  background-color: var(--colorGris);
+}
+
+.thead th {
+  background-color: var(--colorAzul) !important;
+  color: white !important;
+}
