@@ -61,8 +61,18 @@ function BodyUserHome() {
         loadFilteredSurveys();
     }
 
+    function handleSeleccionOrder(orderBy){
+        if(orderBy === 'A-Z'){
+            setSurveys([...surveys].sort((a, b) => a.name.localeCompare(b.name)));
+        }else if(orderBy === 'Z-A'){
+            setSurveys([...surveys].sort((a, b) => b.name.localeCompare(a.name)));
+        }else{
+            console.log('filtar por Las mas nuevas');
+        }
+    }
+
   return (
-    <>
+    <div className='container_body'>
         <div className='container my-5'>
             <div className='row'>
                 <div className='col-12'>
@@ -77,9 +87,9 @@ function BodyUserHome() {
                         <Dropdown.Toggle split variant='secondary' id="dropdown-split-basic" />
 
                         <Dropdown.Menu >
-                            <Dropdown.Item  href="#/action-1">A-Z</Dropdown.Item>
-                            <Dropdown.Item href="#/action-2">Z-A</Dropdown.Item>
-                            <Dropdown.Item href="#/action-3">Los mas nuevos</Dropdown.Item>
+                            <Dropdown.Item  href="#/action-1" onClick={() => handleSeleccionOrder('A-Z')}>A-Z</Dropdown.Item>
+                            <Dropdown.Item href="#/action-2" onClick={() => handleSeleccionOrder('Z-A')}>Z-A</Dropdown.Item>
+                            <Dropdown.Item href="#/action-3" onClick={() => handleSeleccionOrder('Los mas nuevos')}>Los mas nuevos</Dropdown.Item>
                         </Dropdown.Menu>
                     </Dropdown>
                 </div>
@@ -125,7 +135,7 @@ function BodyUserHome() {
         </div>
 
         <GridCard surveys={surveys}/>
-    </>
+    </div>
   )
 }
 

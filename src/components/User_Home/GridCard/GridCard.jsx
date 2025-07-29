@@ -2,9 +2,8 @@ import { Button, Card, Col, Row } from 'react-bootstrap'
 import './GridCard.css';
 
 function GridCard({surveys}) {
-
   return (
-    <div className='container mb-5'>
+    <div className='container mb-5 '>
         <Row xs={1} lg={2} className="g-4">
             {surveys.map((survey) => (
                 <Col key={survey.id}>
