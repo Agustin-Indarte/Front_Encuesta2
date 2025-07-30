@@ -1,3 +1,8 @@
+.ContainerGridEncuestas {
+  height: 500px; /* Ajustalo a tu necesidad */
+  overflow-y: auto;
+ 
+}
 
 .img-full-height {
   width: 100%;

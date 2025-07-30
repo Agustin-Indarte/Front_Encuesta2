@@ -1,12 +1,17 @@
 import React from 'react'
-import { BodyUserHome} from '../../components'
+import { BodyUserHome, Navbar } from '../../components'
 
 
 function User_Home() {
   return (
-    <div>
-      <BodyUserHome/>
-    </div>
+    <>
+      <Navbar />
+      <div className="Container-Page">
+        <BodyUserHome />
+      </div>
+    </>
+
+
   )
 }
 
