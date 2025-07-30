@@ -1,0 +1,36 @@
+
+.ContainerFormRegister {
+  background-color: var(--colorAzulOscuro) ;
+  height: 100vh;
+  max-height: 100vh;
+}
+
+.form
+{background-color: var(--colorGris);
+  border-radius: 10px
+} */
+
+.btn-azul {
+  background-color: var(--colorAzul) !important;
+ 
+  padding: 0.6rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 134, 231, 0.4);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.Btn-Registro:hover {
+  background-color: whitesmoke; /* un azul más oscuro en hover */
+  color: var(--colorAzul);
+  box-shadow: 0 6px 12px rgba(0, 99, 177, 0.6);
+  
+}
+
+.btn-azul:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 6px rgba(0, 99, 177, 0.4);
+}
