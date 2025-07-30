@@ -1,8 +1,12 @@
 import React from 'react'
+import { BodyUserHome} from '../../components'
+
 
 function User_Home() {
   return (
-    <div>User_Home</div>
+    <div>
+      <BodyUserHome/>
+    </div>
   )
 }
 

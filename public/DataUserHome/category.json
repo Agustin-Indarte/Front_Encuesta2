@@ -1,0 +1,27 @@
+[
+  {
+    "id": "f4a9e56e-6b1c-4b6e-8e3d-bdc0fce125d1",
+    "fecha": "2025-07-15",
+    "nombre": "Deportes"
+  },
+  {
+    "id": "a2c5b15f-90f2-4039-91d7-13fa4d870b93",
+    "fecha": "2025-07-12",
+    "nombre": "Salud Pública"
+  },
+  {
+    "id": "e9a7823a-f1dc-4f1e-86bb-f20e93326f4e",
+    "fecha": "2025-07-09",
+    "nombre": "Educación"
+  },
+  {
+    "id": "bd13757b-994a-4d27-9124-6758de578d36",
+    "fecha": "2025-07-06",
+    "nombre": "Medio Ambiente"
+  },
+  {
+    "id": "89e2d3a5-bc3e-4195-b0ec-4fddf41ed6aa",
+    "fecha": "2025-07-03",
+    "nombre": "Comida y Consumo"
+  }
+]
