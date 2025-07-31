@@ -12,6 +12,7 @@ function SurveyTable({ data, onSelect, onDelete }) {
             <th>FECHA</th>
             <th>CATEGORÍA</th>
             <th>ENCUESTA</th>
+            <th>ESTADO</th>
             <th>ACCIONES</th>
           </tr>
         </thead>
@@ -26,6 +27,7 @@ function SurveyTable({ data, onSelect, onDelete }) {
               <td>{s.fecha}</td>
               <td>{s.categoria}</td>
               <td>{s.nombre}</td>
+              <td>{s.estado}</td>
               <td>
                 <Button 
                   variant="danger" 

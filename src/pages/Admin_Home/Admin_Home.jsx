@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AdminHeader, SurveyTable, CategoryModal,  Navbar, AdmFooter } from '../../components';
+import { AdminHeader, SurveyTable, CategoryModal,  Navbar, AdmFooter,DeleteConfirm } from '../../components';
 import styles from './Admin_Home.module.css';
 import {useCategories} from '../../context/EncuestasContext'
 
@@ -44,6 +44,11 @@ function Admin_Home() {
   const [categoryFilter, setCategoryFilter] = useState(null);
   const [sortedSurveys, setSortedSurveys] = useState(null);
   const [showCat, setShowCat] = useState(false);
+
+  // ESTADOS PARA EL MODAL DE ELIMINAR ENCUESTA
+  const [showDel, setShowDel] = useState(false);
+  const [selectedSurvey, setSelectedSurvey] = useState(null);
+  const [delMessage, setDelMessage] = useState('');
 
    useEffect(() => {
     setSurveys(loadSurveys());
@@ -119,7 +124,16 @@ function Admin_Home() {
 
   const handleSelectSurvey = (s) => {
     setSelectedSurvey(s);
-    setShowSurvey(true);
+  };
+
+  // FUNCIÓN PARA ELIMINAR ENCUESTA
+  const deleteSurvey = () => {
+    if (!selectedSurvey) return;
+    const updated = surveys.filter(s => s !== selectedSurvey);
+    setSurveys(updated);
+    localStorage.setItem('encuestas', JSON.stringify(updated));
+    setShowDel(false);
+    setSelectedSurvey(null);
   };
 
   const handleDeleteClick = (s) => {
@@ -159,7 +173,13 @@ function Admin_Home() {
           onDelete={deleteCategory}
         />
 
-        {/* Resto de tus modales... */}
+        {/* MODAL DE CONFIRMACIÓN DE ELIMINACIÓN */}
+        <DeleteConfirm
+          show={showDel}
+          onHide={() => setShowDel(false)}
+          onConfirm={deleteSurvey}
+          message={delMessage}
+        />
       </div>
     </>
   );

@@ -23,11 +23,6 @@
   overflow-y: auto; /* Permite scroll dentro del cuerpo si es necesario */
 }
 
-/* Opcional: altura fija para las filas */
-.tableBody tr {
-  height: 50px; /* Ajusta este valor según necesites */
-}
-
 .even {
   background-color: var(--colorGris);
 }
