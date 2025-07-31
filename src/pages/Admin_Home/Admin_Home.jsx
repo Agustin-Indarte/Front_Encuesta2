@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { AdminHeader, SurveyModal, SurveyTable, CategoryModal, DeleteConfirm, Navbar, AdmFooter } from '../../components';
+import React, { useState, useEffect } from 'react';
+import { AdminHeader, SurveyTable, CategoryModal,  Navbar, AdmFooter } from '../../components';
 import styles from './Admin_Home.module.css';
+import {useCategories} from '../../context/EncuestasContext'
 
 const initialSurveys = [
   { id: 1, fecha: '19/06/2025', categoria: 'Deportes', nombre: 'Mundial de Clubes' },
@@ -20,26 +21,60 @@ const initialSurveys = [
   { id: 15, fecha: '09/08/2025', categoria: 'Cultura', nombre: 'Festivales internacionales' }
 ]
 
-const initialCategories = [
-  { id: 1, fecha: '19/06/2025', nombre: 'Deportes' },
-  { id: 2, fecha: '07/07/2025', nombre: 'Salud' },
-  { id: 3, fecha: '21/06/2025', nombre: 'Educación' },
-  { id: 4, fecha: '23/06/2025', nombre: 'Tecnología' },
-  { id: 5, fecha: '01/07/2025', nombre: 'Política' },
-  { id: 6, fecha: '30/06/2025', nombre: 'Cultura' },
-];
+// Función para cargar categorías desde localStorage
+const loadCategories = () => {
+  try {
+    const saved = localStorage.getItem('surveyCategories');
+    return saved ? JSON.parse(saved) : [];
+  } catch (error) {
+    console.error('Error loading categories:', error);
+    return [];
+  }
+};
+
 
 function Admin_Home() {
+  const { categories, setCategories } = useCategories();
   const [surveys, setSurveys] = useState(initialSurveys);
-  const [categories, setCategories] = useState(initialCategories);
   const [filter, setFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState(null);
   const [sortedSurveys, setSortedSurveys] = useState(null);
   const [showCat, setShowCat] = useState(false);
-  const [showSurvey, setShowSurvey] = useState(false);
-  const [selectedSurvey, setSelectedSurvey] = useState(null);
-  const [showDel, setShowDel] = useState(false);
-  const [delMessage, setDelMessage] = useState('');
+
+  // Cargar categorías al iniciar
+  useEffect(() => {
+    setCategories(loadCategories());
+  }, []);
+
+  // Guardar categorías cuando cambian
+  useEffect(() => {
+    localStorage.setItem('surveyCategories', JSON.stringify(categories));
+  }, [categories]);
+
+  // Manejo de categorías
+  const addCategory = (name) => {
+    if (!name.trim()) return;
+    
+    const newCategory = {
+      id: Date.now(),
+      fecha: new Date().toLocaleDateString('es-AR'),
+      nombre: name.trim()
+    };
+    
+    setCategories(prev => [...prev, newCategory]);
+  };
+
+  const deleteCategory = (category) => {
+    if (!window.confirm(`¿Eliminar la categoría "${category.nombre}"?`)) return;
+    
+    // 1. Eliminar la categoría
+    setCategories(prev => prev.filter(c => c.id !== category.id));
+    
+    // 2. Actualizar encuestas que usaban esta categoría
+    setSurveys(prev => prev.map(s => 
+      s.categoria === category.nombre ? { ...s, categoria: 'General' } : s
+    ));
+  };
 
   const normalize = (str) =>
     str ? str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() : '';
@@ -50,12 +85,11 @@ function Admin_Home() {
     return matchesSearch && matchesCategory;
   });
 
-  // Modificar las funciones de ordenamiento para resetear otros filtros
   const handleSortAZ = () => {
     const sorted = [...surveys].sort((a, b) => a.nombre.localeCompare(b.nombre));
     setSortedSurveys(sorted);
-    setFilter(''); // Resetear búsqueda
-    setCategoryFilter(null); // Resetear categoría
+    setFilter('');
+    setCategoryFilter(null);
   };
 
   const handleSortByDate = () => {
@@ -65,18 +99,15 @@ function Admin_Home() {
       return new Date(y2, m2 - 1, d2) - new Date(y1, m1 - 1, d1);
     });
     setSortedSurveys(sorted);
-    setFilter(''); // Resetear búsqueda
-    setCategoryFilter(null); // Resetear categoría
+    setFilter('');
+    setCategoryFilter(null);
   };
 
-  // Modificar la función de selección de categoría
   const handleCategorySelect = (name) => {
     setCategoryFilter(name);
-    setFilter(''); // Resetear búsqueda
-    setSortedSurveys(null); // Resetear ordenamiento
+    setFilter('');
+    setSortedSurveys(null);
   };
-
-
 
   const handleSelectSurvey = (s) => {
     setSelectedSurvey(s);
@@ -89,15 +120,11 @@ function Admin_Home() {
     setShowDel(true);
   };
 
-
-
+  
   return (
     <>
       <Navbar />
       <div className="Container-Page">
-
-
-
         <AdminHeader
           onOpenCategory={() => setShowCat(true)}
         />
@@ -116,51 +143,17 @@ function Admin_Home() {
           onCategorySelect={handleCategorySelect}
         />
 
-
-
-        <CategoryModal
+         <CategoryModal
           show={showCat}
           onHide={() => setShowCat(false)}
           categories={categories}
-          onSave={(name) =>
-            setCategories([
-              ...categories,
-              { id: Date.now(), fecha: new Date().toLocaleDateString('es-AR'), nombre: name },
-            ])
-          }
-          onDelete={(c) => setCategories(categories.filter((x) => x.id !== c.id))}
+          onSave={addCategory}
+          onDelete={deleteCategory}
         />
 
-        <SurveyModal
-          show={showSurvey}
-          onHide={() => setShowSurvey(false)}
-          survey={selectedSurvey}
-          categories={categories}
-          onSave={(s) => {
-            if (s.id) {
-              setSurveys(surveys.map((x) => (x.id === s.id ? s : x)));
-            } else {
-              setSurveys([
-                ...surveys,
-                { ...s, id: Date.now(), fecha: new Date().toLocaleDateString('es-AR') },
-              ]);
-            }
-            setSortedSurveys(null);
-          }}
-        />
-
-        <DeleteConfirm
-          show={showDel}
-          onHide={() => setShowDel(false)}
-          message={delMessage}
-          onConfirm={() => {
-            setSurveys(surveys.filter((x) => x.id !== selectedSurvey.id));
-            setSortedSurveys(null);
-          }}
-        />
+        {/* Resto de tus modales... */}
       </div>
     </>
-
   );
 }
 

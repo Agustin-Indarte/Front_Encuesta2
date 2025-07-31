@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { Navbar, AdmGridCards } from '../../components';
 import { Row, Form, Col, Button } from 'react-bootstrap';
+import {useCategories} from '../../context/EncuestasContext'
 import { FaUpload } from "react-icons/fa";
 import './Admin_Encuestas.css'
 
 
 function Admin_Encuestas() {
+  const { categories } = useCategories();
   const initialized = useRef(false);
   const [encuestaData, setEncuestaData] = useState({
     nombre: '',
@@ -234,8 +236,11 @@ function Admin_Encuestas() {
               required
             >
               <option value="">Seleccionar Categoría</option>
-              <option value="deportes">Deportes</option>
-              <option value="salud">Salud</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.nombre}
+                </option>
+              ))}
             </Form.Select>
           </Col>
 
