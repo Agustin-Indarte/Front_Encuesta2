@@ -87,10 +87,15 @@ function Admin_Encuestas() {
   };
 
   const handlePublicar = () => {
-    if (!encuestaData.nombre) {
-      alert('Por favor ingresa un nombre para la encuesta');
-      return;
-    }
+  if (!encuestaData.nombre) {
+    alert('Por favor ingresa un nombre para la encuesta');
+    return;
+  }
+
+  // Buscar el nombre de la categoría por id
+  const categoriaObj = categories.find(cat => String(cat.id) === String(encuestaData.categoria));
+  const categoriaNombre = categoriaObj ? categoriaObj.nombre : '';
+
 
     // 1. Filtrar cards no definidas y limpiar el contenido
     const cardsFiltradas = encuestaData.cards
@@ -160,24 +165,30 @@ function Admin_Encuestas() {
       });
 
     // 2. Crear el objeto final de la encuesta
-    const encuestaCompleta = {
-      nombre: encuestaData.nombre || '',
-      estado: encuestaData.estado || '',
-      categoria: encuestaData.categoria || '',
-      fechaCreacion: new Date().toISOString(),
-      cards: cardsFiltradas
-    };
+  const encuestaCompleta = {
+    id: Date.now(), // ID único para la tabla
+    nombre: encuestaData.nombre || '',
+    estado: encuestaData.estado || '',
+    categoria: categoriaNombre, // Guardar el nombre, no el id
+    fecha: new Date().toLocaleDateString('es-AR'), // Para la tabla
+    fechaCreacion: new Date().toISOString(),
+    cards: cardsFiltradas
+  };
 
-    // 3. Convertir a JSON y descargar
-    const dataStr = JSON.stringify(encuestaCompleta, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-    const nombreArchivo = `encuesta_${encuestaData.nombre || 'sin_nombre'}_${new Date().toISOString().slice(0, 10)}.json`;
+    // 3. Guardar en localStorage
+  const encuestasGuardadas = JSON.parse(localStorage.getItem('encuestas')) || [];
+  encuestasGuardadas.push(encuestaCompleta);
+  localStorage.setItem('encuestas', JSON.stringify(encuestasGuardadas));
 
-    // Crear enlace de descarga
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', nombreArchivo);
-    linkElement.click();
+  // 4. Descargar JSON
+  const dataStr = JSON.stringify(encuestaCompleta, null, 2);
+  const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+  const nombreArchivo = `encuesta_${encuestaData.nombre || 'sin_nombre'}_${new Date().toISOString().slice(0, 10)}.json`;
+
+  const linkElement = document.createElement('a');
+  linkElement.setAttribute('href', dataUri);
+  linkElement.setAttribute('download', nombreArchivo);
+  linkElement.click();
   };
 
   const handleFileChange = (e) => {

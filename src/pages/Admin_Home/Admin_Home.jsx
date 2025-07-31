@@ -3,23 +3,7 @@ import { AdminHeader, SurveyTable, CategoryModal,  Navbar, AdmFooter } from '../
 import styles from './Admin_Home.module.css';
 import {useCategories} from '../../context/EncuestasContext'
 
-const initialSurveys = [
-  { id: 1, fecha: '19/06/2025', categoria: 'Deportes', nombre: 'Mundial de Clubes' },
-  { id: 2, fecha: '23/06/2025', categoria: 'Tecnología', nombre: 'Uso de inteligencia artificial' },
-  { id: 3, fecha: '20/06/2025', categoria: 'Salud', nombre: 'Hábitos alimenticios' },
-  { id: 4, fecha: '30/06/2025', categoria: 'Cultura', nombre: 'Preferencias musicales' },
-  { id: 5, fecha: '01/07/2025', categoria: 'Política', nombre: 'Opinión sobre elecciones 2025' },
-  { id: 6, fecha: '07/07/2025', categoria: 'Educacion', nombre: 'Satisfacción de estudiantes' },
-  { id: 7, fecha: '10/07/2025', categoria: 'Economía', nombre: 'Inflación en América Latina' },
-  { id: 8, fecha: '15/07/2025', categoria: 'Ciencia', nombre: 'Exploración espacial 2025' },
-  { id: 9, fecha: '18/07/2025', categoria: 'Medio Ambiente', nombre: 'Cambio climático y ciudades' },
-  { id: 10, fecha: '22/07/2025', categoria: 'Entretenimiento', nombre: 'Estrenos de streaming' },
-  { id: 11, fecha: '25/07/2025', categoria: 'Negocios', nombre: 'Tendencias de emprendimiento' },
-  { id: 12, fecha: '28/07/2025', categoria: 'Salud', nombre: 'Avances en medicina genética' },
-  { id: 13, fecha: '02/08/2025', categoria: 'Tecnología', nombre: 'Realidad virtual en educación' },
-  { id: 14, fecha: '05/08/2025', categoria: 'Deportes', nombre: 'Juegos Olímpicos Paris 2025' },
-  { id: 15, fecha: '09/08/2025', categoria: 'Cultura', nombre: 'Festivales internacionales' }
-]
+
 
 // Función para cargar categorías desde localStorage
 const loadCategories = () => {
@@ -32,14 +16,38 @@ const loadCategories = () => {
   }
 };
 
+const loadSurveys = () => {
+  try {
+    const saved = localStorage.getItem('encuestas');
+    let arr = saved ? JSON.parse(saved) : [];
+    // Si alguna encuesta tiene categoria como objeto, conviértelo a string
+    arr = arr.map(e => ({
+      ...e,
+      categoria: typeof e.categoria === 'object' && e.categoria !== null
+        ? e.categoria.nombre
+        : e.categoria
+    }));
+    // Opcional: guarda la corrección en localStorage
+    localStorage.setItem('encuestas', JSON.stringify(arr));
+    return arr;
+  } catch (error) {
+    console.error('Error loading surveys:', error);
+    return [];
+  }
+};
+
 
 function Admin_Home() {
   const { categories, setCategories } = useCategories();
-  const [surveys, setSurveys] = useState(initialSurveys);
+ const [surveys, setSurveys] = useState(loadSurveys());
   const [filter, setFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState(null);
   const [sortedSurveys, setSortedSurveys] = useState(null);
   const [showCat, setShowCat] = useState(false);
+
+   useEffect(() => {
+    setSurveys(loadSurveys());
+  }, []);
 
   // Cargar categorías al iniciar
   useEffect(() => {
