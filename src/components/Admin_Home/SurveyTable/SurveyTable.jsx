@@ -24,10 +24,10 @@ function SurveyTable({ data, onSelect, onDelete }) {
               onClick={() => onSelect(s)}
             >
               <td>{s.id}</td>
-              <td>{s.fecha}</td>
-              <td>{s.categoria}</td>
-              <td>{s.nombre}</td>
-              <td>{s.estado}</td>
+              <td>{s.date}</td>
+              <td>{s.category}</td>
+              <td>{s.name}</td>
+              <td>{s.state}</td>
               <td>
                 <Button 
                   variant="danger" 

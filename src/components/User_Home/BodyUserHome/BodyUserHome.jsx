@@ -2,64 +2,44 @@ import { Button, ButtonGroup, Dropdown, InputGroup, Form, Row, Col } from 'react
 import './BodyUserHome.css';
 import { useEffect, useState } from 'react';
 import GridCard from '../GridCard/GridCard';
+import {useCategories} from '../../../context/EncuestasContext'
 
 
 function BodyUserHome() {
-
-    const [categories, setCategories] = useState([]);
-
-    useEffect(() => {
-        const loadCategories = async () => {
-            try {
-                const respuesta = await fetch('../../../../public/DataUserHome/category.json');
-                const data = await respuesta.json();
-                setCategories(data);
-            } catch (error) {
-                console.error('Error al cargar las categorias', error)
-            }
-        }
-        loadCategories();
-    }, []);
-
+    const { categories } = useCategories();
     const [surveys, setSurveys] = useState([]);
 
+  
+   // Cargar encuestas desde localStorage al montar
     useEffect(() => {
         loadSurveys();
     }, []);
 
-    const loadSurveys = async () => {
+    // Cargar encuestas desde localStorage
+    const loadSurveys = () => {
         try {
-            const answer = await fetch('../../../../public/DataUserHome/surveys.json');
-            const data = await answer.json();
+            const data = JSON.parse(localStorage.getItem('encuestas')) || [];
             setSurveys(data);
         } catch (error) {
-            console.error('Error al cargar las encuestas', error)
+            console.error('Error al cargar las encuestas', error);
         }
-    }
+    };
 
     function handleSeleccion(cat) {
+        const data = JSON.parse(localStorage.getItem('encuestas')) || [];
         if (cat === 'Todas') {
-            loadSurveys();
+            setSurveys(data);
         } else {
-            getCategories(cat);
+            const filtered = data.filter((item) => {
+                if (typeof item.category === 'object' && item.category !== null) {
+                    return item.category.nombre === cat;
+                }
+                return item.category === cat;
+            });
+            setSurveys(filtered);
         }
     }
 
-    function getCategories(nameCat) {
-
-        const loadFilteredSurveys = async () => {
-            try {
-                const answer = await fetch('../../../../public/DataUserHome/surveys.json');
-                const data = await answer.json();
-                const filteredCategories = data.filter((item) => item.category === nameCat);
-                setSurveys(filteredCategories);
-            } catch (error) {
-                console.error('Error al cargar las encuestas', error)
-            }
-        }
-
-        loadFilteredSurveys();
-    }
 
     function handleSeleccionOrder(orderBy) {
         if (orderBy === 'A-Z') {
@@ -70,6 +50,43 @@ function BodyUserHome() {
             console.log('filtar por Las mas nuevas');
         }
     }
+
+   function handleSeleccionOrder(orderBy) {
+        let sorted = [...surveys];
+        // Usar el título de la primera card tipo text para ordenar
+        if (orderBy === 'A-Z') {
+            sorted.sort((a, b) => getFirstCardTitle(a).localeCompare(getFirstCardTitle(b)));
+        } else if (orderBy === 'Z-A') {
+            sorted.sort((a, b) => getFirstCardTitle(b).localeCompare(getFirstCardTitle(a)));
+        } else {
+            // Los más nuevos
+            sorted.sort((a, b) => new Date(b.fechaCreacion || b.date) - new Date(a.fechaCreacion || a.date));
+        }
+        setSurveys(sorted);
+    }
+
+    // Helpers para extraer datos de la primera card tipo "text"
+    function getFirstCard(survey) {
+        return survey.cards?.find(card => card.type === 'text') || {};
+    }
+    
+    function getFirstCardDescription(survey) {
+        return getFirstCard(survey).content?.description || '';
+    }
+    function getImage(survey) {
+        return survey.imagen || survey.image || 'https://via.placeholder.com/150';
+    }
+
+    const gridSurveys = surveys.map(s => ({
+    id: s.id,
+    name: s.name,
+    description: getFirstCardDescription(s),
+    image: getImage(s),
+    category:
+        (typeof s.categoria === 'object' && s.categoria !== null && s.categoria.nombre) ||
+        s.category || // <-- Soporta también 'category'
+        ''
+}));
 
     return (
         <div className='container_body'>
@@ -126,7 +143,7 @@ function BodyUserHome() {
                     </div>
                 </Col>
             </Row>
-            <GridCard surveys={surveys} />
+            <GridCard surveys={gridSurveys} />
         </div>
     )
 }

@@ -1,10 +1,19 @@
 import { useState, useEffect, useRef } from 'react';
 import { Navbar, AdmGridCards } from '../../components';
 import { Row, Form, Col, Button } from 'react-bootstrap';
-import {useCategories} from '../../context/EncuestasContext'
+import { useCategories } from '../../context/EncuestasContext'
 import { FaUpload } from "react-icons/fa";
 import './Admin_Encuestas.css'
 
+function formatFechaArgentina(dateObj) {
+  const pad = (n) => n.toString().padStart(2, '0');
+  const dia = pad(dateObj.getDate());
+  const mes = pad(dateObj.getMonth() + 1);
+  const anio = dateObj.getFullYear();
+  const horas = pad(dateObj.getHours());
+  const minutos = pad(dateObj.getMinutes());
+  return `${dia}/${mes}/${anio} ${horas}:${minutos}`;
+}
 
 function Admin_Encuestas() {
   const { categories } = useCategories();
@@ -13,6 +22,7 @@ function Admin_Encuestas() {
     nombre: '',
     estado: '',
     categoria: '',
+    imagenUrl: '', // NUEVO: url de imagen
     cards: []
   });
   const [activeCardId, setActiveCardId] = useState(null);
@@ -87,14 +97,14 @@ function Admin_Encuestas() {
   };
 
   const handlePublicar = () => {
-  if (!encuestaData.nombre) {
-    alert('Por favor ingresa un nombre para la encuesta');
-    return;
-  }
+    if (!encuestaData.nombre) {
+      alert('Por favor ingresa un nombre para la encuesta');
+      return;
+    }
 
-  // Buscar el nombre de la categoría por id
-  const categoriaObj = categories.find(cat => String(cat.id) === String(encuestaData.categoria));
-  const categoriaNombre = categoriaObj ? categoriaObj.nombre : '';
+    // Buscar el nombre de la categoría por id
+    const categoriaObj = categories.find(cat => String(cat.id) === String(encuestaData.categoria));
+    const categoriaNombre = categoriaObj ? categoriaObj.nombre : '';
 
 
     // 1. Filtrar cards no definidas y limpiar el contenido
@@ -165,30 +175,31 @@ function Admin_Encuestas() {
       });
 
     // 2. Crear el objeto final de la encuesta
-  const encuestaCompleta = {
-    id: Date.now(), // ID único para la tabla
-    nombre: encuestaData.nombre || '',
-    estado: encuestaData.estado || '',
-    categoria: categoriaNombre, // Guardar el nombre, no el id
-    fecha: new Date().toLocaleDateString('es-AR'), // Para la tabla
-    fechaCreacion: new Date().toISOString(),
-    cards: cardsFiltradas
-  };
+    const now = new Date();
+    const encuestaCompleta = {
+      id: Date.now(),
+      name: encuestaData.nombre || '',
+      state: encuestaData.estado || '',
+      category: categoriaNombre,
+      date: formatFechaArgentina(now), // <-- Fecha en formato argentino
+      image: encuestaData.imagenUrl || '',
+      cards: cardsFiltradas
+    };
 
     // 3. Guardar en localStorage
-  const encuestasGuardadas = JSON.parse(localStorage.getItem('encuestas')) || [];
-  encuestasGuardadas.push(encuestaCompleta);
-  localStorage.setItem('encuestas', JSON.stringify(encuestasGuardadas));
+    const encuestasGuardadas = JSON.parse(localStorage.getItem('encuestas')) || [];
+    encuestasGuardadas.push(encuestaCompleta);
+    localStorage.setItem('encuestas', JSON.stringify(encuestasGuardadas));
 
-  // 4. Descargar JSON
-  const dataStr = JSON.stringify(encuestaCompleta, null, 2);
-  const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-  const nombreArchivo = `encuesta_${encuestaData.nombre || 'sin_nombre'}_${new Date().toISOString().slice(0, 10)}.json`;
+    // 4. Descargar JSON
+    const dataStr = JSON.stringify(encuestaCompleta, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+    const nombreArchivo = `encuesta_${encuestaData.nombre || 'sin_nombre'}_${new Date().toISOString().slice(0, 10)}.json`;
 
-  const linkElement = document.createElement('a');
-  linkElement.setAttribute('href', dataUri);
-  linkElement.setAttribute('download', nombreArchivo);
-  linkElement.click();
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', nombreArchivo);
+    linkElement.click();
   };
 
   const handleFileChange = (e) => {
@@ -273,39 +284,15 @@ function Admin_Encuestas() {
 
           <Col md={3}>
 
-            <Form.Group controlId="formFile" className="mb-3">
-              <div className="input-group">
-                {/* Botón azul con ícono de subida (React Icons) */}
-                <label
-                  className="input-group-text bg-primary text-white fs-4"
-                  htmlFor="customFileInput"
-                  style={{ cursor: "pointer" }}
-                >
-                  <FaUpload /> {/* Ícono de React Icons */}
-                </label>
-
-                {/* Input de archivo oculto */}
-                <input
-                  type="file"
-                  id="customFileInput"
-                  accept="image/*"
-                  className="form-control fs-4 d-none"
-                  name="imagen"
-                  onChange={handleFileChange}
-                  required
-                />
-
-                {/* Caja que muestra el nombre del archivo */}
-                <input
-                  type="text"
-                  className="form-control fs-4"
-                  placeholder="Subir portada"
-                  value={encuestaData.imagen?.name || ""} // Usamos optional chaining por seguridad
-                  onClick={() => document.getElementById('customFileInput').click()}
-                  readOnly
-                  style={{ cursor: "pointer" }}
-                />
-              </div>
+            <Form.Group className="mb-3">
+              <Form.Label>URL de la imagen de portada</Form.Label>
+              <Form.Control
+                type="text"
+                name="imagenUrl"
+                placeholder="Pega aquí la URL de la imagen"
+                value={encuestaData.imagenUrl}
+                onChange={handleMetadataChange}
+              />
             </Form.Group>
 
             <Button
