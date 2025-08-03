@@ -1,12 +1,28 @@
-import { createContext, useState, useContext } from 'react';
+import { createContext, useState, useContext,useEffect } from 'react';
 
 export const EncuestasContext = createContext();
 
-export function EncuestasProvider({ children }) {  // Cambiado de CategoryProvider a EncuestasProvider
-  const [categories, setCategories] = useState([]);
-  // Aquí puedes añadir más estados que necesites para las encuestas
+export function EncuestasProvider({ children }) { 
+  
+  // Cargar categorías desde localStorage al iniciar
+  const loadCategories = () => {
+    try {
+      const saved = localStorage.getItem('surveyCategories');
+      return saved ? JSON.parse(saved) : [];
+    } catch (error) {
+      console.error('Error loading categories:', error);
+      return [];
+    }
+  };
+
+  const [categories, setCategories] = useState(loadCategories());
   const [encuestas, setEncuestas] = useState([]);
   const [currentEncuesta, setCurrentEncuesta] = useState(null);
+
+   // incronizar cambios en categories con localStorage
+  useEffect(() => {
+    localStorage.setItem('surveyCategories', JSON.stringify(categories));
+  }, [categories]);
   
   return (
     <EncuestasContext.Provider 
@@ -17,7 +33,7 @@ export function EncuestasProvider({ children }) {  // Cambiado de CategoryProvid
         setEncuestas,
         currentEncuesta,
         setCurrentEncuesta
-        // Agrega aquí cualquier otro valor que necesites
+
       }}
     >
       {children}

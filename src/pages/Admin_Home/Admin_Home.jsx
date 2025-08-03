@@ -54,11 +54,6 @@ function Admin_Home() {
     setSurveys(loadSurveys());
   }, []);
 
-  // Cargar categorías al iniciar
-  useEffect(() => {
-    setCategories(loadCategories());
-  }, []);
-
   // Guardar categorías cuando cambian
   useEffect(() => {
     localStorage.setItem('surveyCategories', JSON.stringify(categories));

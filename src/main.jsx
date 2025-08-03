@@ -1,18 +1,21 @@
 import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App.jsx';
-import { BrowserRouter} from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from './components/Register/context/AuthContext.jsx';
 import { Toaster } from 'react-hot-toast';
 import { TaskProvider } from './components/Register/context/TaskContext.jsx'
-
+import { EncuestasProvider } from './context/EncuestasContext';
 
 createRoot(document.getElementById('root')).render(
 
-<BrowserRouter>
+  <BrowserRouter>
+
     <AuthProvider>
       <TaskProvider>
-        <App />
+        <EncuestasProvider>
+          <App />
+        </EncuestasProvider>
         <Toaster
           position="top-right"
           toastOptions={{
@@ -32,5 +35,5 @@ createRoot(document.getElementById('root')).render(
         />
       </TaskProvider>
     </AuthProvider>
- </BrowserRouter>
+  </BrowserRouter>
 )
