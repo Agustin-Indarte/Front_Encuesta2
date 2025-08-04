@@ -77,15 +77,16 @@ function BodyUserHome() {
         return survey.imagen || survey.image || 'https://via.placeholder.com/150';
     }
 
-    const gridSurveys = surveys.map(s => ({
+   const gridSurveys = surveys.map(s => ({
     id: s.id,
     name: s.name,
     description: getFirstCardDescription(s),
     image: getImage(s),
     category:
         (typeof s.categoria === 'object' && s.categoria !== null && s.categoria.nombre) ||
-        s.category || // <-- Soporta también 'category'
-        ''
+        s.category ||
+        '',
+    cards: s.cards 
 }));
 
     return (

@@ -20,3 +20,10 @@ export {default as SurveyModal} from './Admin_Home/SurveyModal/SurveyModal'
 export {default as DeleteConfirm} from './Admin_Home/DeleteConfirm/DeleteConfirm'
 export {default as BodyUserHome} from './User_Home/BodyUserHome/BodyUserHome'
 export {default as GridCard} from './User_Home/GridCard/GridCard'
+
+//Componentes del User_Encuesta
+export {default as UserGridCards} from './User_Encuestas/GridCards/UserGridCards'
+export {default as UserCard} from './User_Encuestas/Card/UserCard'
+export {default as RespText} from './User_Encuestas/CardContent/RespText'
+export {default as RespQuestion} from './User_Encuestas/CardContent/RespQuestion'
+export {default as RespMultimedia} from './User_Encuestas/CardContent/RespMultimedia'
