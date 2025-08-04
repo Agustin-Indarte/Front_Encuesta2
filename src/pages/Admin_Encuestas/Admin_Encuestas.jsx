@@ -202,16 +202,6 @@ function Admin_Encuestas() {
     linkElement.click();
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setEncuestaData({
-        ...encuestaData,
-        imagen: file
-      });
-    }
-  };
-
   return (
     <>
       <Navbar />

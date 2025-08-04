@@ -11,7 +11,7 @@ function TypeQuestion({ content, onUpdate }) {
         labelMin: content?.labelMin || '',
         labelMax: content?.labelMax || '',
         fileConfig: content?.fileConfig || {
-            maxSize: '1mb',
+            maxSize: 1,
             maxCount: 1,
             allowedTypes: ['pdf']
         }
@@ -166,42 +166,83 @@ function TypeQuestion({ content, onUpdate }) {
                 );
 
             case 'Archivos':
-                return (
-                    <div className="mt-1">
-                        <Row>
-                            <Col md={6}>
-                                <Form.Label>Tamaño máximo (MB)</Form.Label>
-                                <Form.Control
-                                    type="number"
-                                    value={questionData.fileConfig.maxSize.replace('mb', '')}
-                                    onChange={(e) => setQuestionData(prev => ({
-                                        ...prev,
-                                        fileConfig: {
-                                            ...prev.fileConfig,
-                                            maxSize: `${e.target.value}mb`
-                                        }
-                                    }))}
-                                />
-                            </Col>
-                            <Col md={6}>
-                                <Form.Label>Cantidad máxima</Form.Label>
-                                <Form.Control
-                                    type="number"
-                                    value={questionData.fileConfig.maxCount}
-                                    onChange={(e) => setQuestionData(prev => ({
-                                        ...prev,
-                                        fileConfig: {
-                                            ...prev.fileConfig,
-                                            maxCount: parseInt(e.target.value) || 1
-                                        }
-                                    }))}
-                                />
-                            </Col>
-                        </Row>
+    return (
+        <div className="mt-1">
+            <Row>
+                <Col md={3}>
+                    <Form.Label>Tamaño máximo</Form.Label>
+                    <Form.Select
+                        value={questionData.fileConfig.maxSize}
+                        onChange={(e) => setQuestionData(prev => ({
+                            ...prev,
+                            fileConfig: {
+                                ...prev.fileConfig,
+                                maxSize: parseInt(e.target.value)
+                            }
+                        }))}
+                    >
+                        <option value="1">1 MB</option>
+                        <option value="10">10 MB</option>
+                        <option value="100">100 MB</option>
+                        <option value="1000">1 GB</option>
+                    </Form.Select>
+                </Col>
+                <Col md={2}>
+                    <Form.Label>Cantidad máxima</Form.Label>
+                    <Form.Select
+                        value={questionData.fileConfig.maxCount}
+                        onChange={(e) => setQuestionData(prev => ({
+                            ...prev,
+                            fileConfig: {
+                                ...prev.fileConfig,
+                                maxCount: parseInt(e.target.value)
+                            }
+                        }))}
+                    >
+                        <option value="1">1</option>
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                    </Form.Select>
+                </Col>
+                <Col md={7}>
+                    <Form.Label>Tipos de archivo permitidos</Form.Label>
+                    <div className="d-flex gap-3 py-2">
+                        {['PDF', 'DOC', 'JPG', 'PNG', 'MP3', 'MP4', 'XLS'].map(type => (
+                            <Form.Check
+                                key={type}
+                                type="checkbox"
+                                id={`file-type-${type}`}
+                                label={type}
+                                checked={questionData.fileConfig.allowedTypes?.includes(type.toLowerCase()) || false}
+                                onChange={(e) => {
+                                    const allowedTypes = questionData.fileConfig.allowedTypes || [];
+                                    if (e.target.checked) {
+                                        setQuestionData(prev => ({
+                                            ...prev,
+                                            fileConfig: {
+                                                ...prev.fileConfig,
+                                                allowedTypes: [...allowedTypes, type.toLowerCase()]
+                                            }
+                                        }));
+                                    } else {
+                                        setQuestionData(prev => ({
+                                            ...prev,
+                                            fileConfig: {
+                                                ...prev.fileConfig,
+                                                allowedTypes: allowedTypes.filter(t => t !== type.toLowerCase())
+                                            }
+                                        }));
+                                    }
+                                }}
+                            />
+                        ))}
                     </div>
-                );
+                </Col>
+            </Row>
+        </div>
+    );
 
-                case 'Fecha':
+            case 'Fecha':
                 return (
                     <div className="mt-1">
                         <Row>
@@ -210,23 +251,23 @@ function TypeQuestion({ content, onUpdate }) {
                                     type="date"
                                 />
                             </Col>
-                            
+
                         </Row>
                     </div>
                 );
 
-                case 'Pregunta':
+            case 'Pregunta':
                 return (
                     <div className="mt-1">
                         <Row>
                             <Col md={12}>
                                 <Form.Control disabled
-                                className='py-4'
+                                    className='py-4'
                                     type="text"
                                     placeholder='Espacio para la respuesta'
                                 />
                             </Col>
-                            
+
                         </Row>
                     </div>
                 );
@@ -261,7 +302,7 @@ function TypeQuestion({ content, onUpdate }) {
                             <option value="Fecha">Fecha</option>
                             <option value="Archivos">Archivos</option>
                             <option value="Pregunta">Respuesta</option>
-                           <option value="Verificación">Verificación</option> 
+                            <option value="Verificación">Verificación</option>
                             <option value="Desplegable">Desplegable</option>
                             <option value="Choice">Choice</option>
                             <option value="Escala">Escala</option>
