@@ -51,19 +51,21 @@ function TypeQuestion({ content, onUpdate }) {
     };
 
     const handleOptionChange = (index, value) => {
-        const newOptions = [...questionData.options];
+    setQuestionData(prev => {
+        const newOptions = [...prev.options];
         newOptions[index] = value;
 
-        // Si es el último campo, estaba vacío y ahora tiene al menos 1 carácter, agregamos uno nuevo
-        if (index === questionData.options.length - 1 && questionData.options[index] === "" && value.length === 1) {
-            newOptions.push(""); // Agregamos el nuevo campo en la misma actualización
+        // Si es el último y no está vacío, agregamos un nuevo campo vacío
+        if (index === prev.options.length - 1 && value.trim() !== "") {
+            newOptions.push("");
         }
 
-        setQuestionData({
-            ...questionData,
+        return {
+            ...prev,
             options: newOptions
-        });
-    };
+        };
+    });
+};
 
     const addOption = () => {
         setQuestionData({
