@@ -137,7 +137,7 @@ function Admin_Encuestas() {
 
             // Campos adicionales según el tipo de pregunta
             switch (card.content.questionType) {
-              case 'Choise':
+              case 'Choice':
               case 'Verificación':
               case 'Desplegable':
                 baseQuestion.options = card.content.options || [];

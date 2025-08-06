@@ -5,7 +5,7 @@ function TypeQuestion({ content, onUpdate }) {
     const [questionData, setQuestionData] = useState({
         questionText: content?.questionText || '',
         questionType: content?.questionType || '',
-        options: content?.options || [''],
+        options: content?.options || (['Choice', 'Verificación', 'Desplegable'].includes(content?.questionType) ? [''] : []),
         min: content?.min || 1,
         max: content?.max || 5,
         labelMin: content?.labelMin || '',
@@ -29,14 +29,29 @@ function TypeQuestion({ content, onUpdate }) {
     };
 
     const handleTypeChange = (e) => {
-        setQuestionData(prev => ({
+    const newType = e.target.value;
+
+    setQuestionData(prev => {
+        const tiposConOpciones = ['Choice', 'Verificación', 'Desplegable'];
+        let newOptions = prev.options;
+
+        // Si el nuevo tipo usa opciones y no hay ninguna, iniciamos una
+        if (tiposConOpciones.includes(newType)) {
+            if (!Array.isArray(prev.options) || prev.options.length === 0) {
+                newOptions = [''];
+            }
+        } else {
+            // Para los tipos que no usan opciones, vaciamos
+            newOptions = [];
+        }
+
+        return {
             ...prev,
-            questionType: e.target.value,
-            options: e.target.value === 'Choice' ||
-                e.target.value === 'Verificación' ||
-                e.target.value === 'Desplegable' ? [''] : []
-        }));
-    };
+            questionType: newType,
+            options: newOptions
+        };
+    });
+};
 
 
 
