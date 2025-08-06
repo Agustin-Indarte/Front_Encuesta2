@@ -137,7 +137,7 @@ function Admin_Encuestas() {
 
             // Campos adicionales según el tipo de pregunta
             switch (card.content.questionType) {
-              case 'Choise':
+              case 'Choice':
               case 'Verificación':
               case 'Desplegable':
                 baseQuestion.options = card.content.options || [];
@@ -200,16 +200,6 @@ function Admin_Encuestas() {
     linkElement.setAttribute('href', dataUri);
     linkElement.setAttribute('download', nombreArchivo);
     linkElement.click();
-  };
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setEncuestaData({
-        ...encuestaData,
-        imagen: file
-      });
-    }
   };
 
   return (
