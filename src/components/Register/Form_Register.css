@@ -6,9 +6,10 @@
 }
 
 .form
-{background-color: var(--colorGris);
+{
+  background-color: whitesmoke;
   border-radius: 10px
-} */
+} 
 
 .btn-azul {
   background-color: var(--colorAzul) !important;

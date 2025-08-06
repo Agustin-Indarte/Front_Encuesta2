@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
-import { addUser, findUserByEmail } from '../../components/Register/services/userService'; 
 import './Form_Register.css'
 import { Button } from "react-bootstrap";
 
@@ -54,7 +53,9 @@ function Form_Register() {
     if (!validateForm()) return;
 
     try {
-      const exists = findUserByEmail(data.email);
+      // Obtener usuarios del localStorage
+      const users = JSON.parse(localStorage.getItem('usuarios')) || [];
+      const exists = users.find(u => u.email === data.email);
       if (exists) {
         toast.error("Ya existe un usuario con ese email");
         return;
@@ -68,9 +69,13 @@ function Form_Register() {
         respuestaEmail: data.respuestaEmail,
       };
 
-      addUser(newUser);
+      users.push(newUser);
+      localStorage.setItem('usuarios', JSON.stringify(users));
 
       toast.success("Registrado correctamente (guardado localmente)");
+
+      // Mostrar todos los usuarios en consola
+      console.log("Usuarios registrados:", users); /* BOORRAR DESPUES!!! MUCHO MUY IMPORTANTEEE */
 
       // Limpiar formulario
       setData({ 
@@ -97,7 +102,7 @@ function Form_Register() {
 
     <form 
       onSubmit={handleSubmit} 
-      className="form w-45w-md-75 w-lg-50 w-xl-25 mx-auto d-flex flex-column rounded-3 p-3"
+      className="form w-25 w-md-75 w-lg-50 w-xl-25 mx-auto d-flex flex-column rounded-3 p-3"
     >
       <h2 className="fs-5 mb-4 text-start">Regístrate Gratis</h2>
 
@@ -156,8 +161,8 @@ function Form_Register() {
         value={data.email}
       />
 
-      <div className="mt-2 mb-3">
-        <small>¿Quieres recibir tus respuestas y notificaciones por email?</small>
+      <div className="mt-2 mb-3 ">
+        <small>¿Quieres recibir notificaciones por email?</small>
         <div className="d-flex flex-column flex-md-row gap-2 mt-1">
           <label className="d-flex align-items-center">
             <input 
@@ -190,13 +195,13 @@ function Form_Register() {
       >
         Registrarse
       </Button>
+    </form>
 
-      <p className="text-center text-sm mb-0">
+    <p className="text-center text-sm mb-0 mt-4 fs-5">
         <Link to="/" className="text-blue-600 hover:underline">
           Volver al inicio
         </Link>
       </p>
-    </form>
   </div>
 );
 
