@@ -2,18 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { Navbar, AdmGridCards } from '../../components';
 import { Row, Form, Col, Button } from 'react-bootstrap';
 import { useCategories } from '../../context/EncuestasContext'
-import { FaUpload } from "react-icons/fa";
 import './Admin_Encuestas.css'
 
-function formatFechaArgentina(dateObj) {
-  const pad = (n) => n.toString().padStart(2, '0');
-  const dia = pad(dateObj.getDate());
-  const mes = pad(dateObj.getMonth() + 1);
-  const anio = dateObj.getFullYear();
-  const horas = pad(dateObj.getHours());
-  const minutos = pad(dateObj.getMinutes());
-  return `${dia}/${mes}/${anio} ${horas}:${minutos}`;
-}
+import { crearEncuesta } from '../../api'; // importa la función
 
 function Admin_Encuestas() {
   const { categories } = useCategories();
@@ -96,102 +87,88 @@ function Admin_Encuestas() {
     }));
   };
 
-  const handlePublicar = () => {
-    if (!encuestaData.nombre) {
-      alert('Por favor ingresa un nombre para la encuesta');
-      return;
-    }
+  const handlePublicar = async () => {
+  if (!encuestaData.nombre) {
+    alert('Por favor ingresa un nombre para la encuesta');
+    return;
+  }
 
-    // Buscar el nombre de la categoría por id
-    const categoriaObj = categories.find(cat => String(cat.id) === String(encuestaData.categoria));
-    const categoriaNombre = categoriaObj ? categoriaObj.nombre : '';
+  // Buscar el nombre de la categoría por id
+  const categoriaObj = categories.find(cat => String(cat.id) === String(encuestaData.categoria));
+  const categoriaNombre = categoriaObj ? categoriaObj.nombre : '';
 
+  // 1. Filtrar cards no definidas y limpiar el contenido
+  const cardsFiltradas = encuestaData.cards
+    .filter(card => card.type)
+    .map(card => {
+      const cleanedCard = {
+        type: card.type,
+        content: { ...card.content }
+      };
+      switch (card.type) {
+        case 'text':
+          cleanedCard.content = {
+            title: card.content.title || '',
+            description: card.content.description || ''
+          };
+          break;
+        case 'question':
+          const baseQuestion = {
+            questionText: card.content.questionText || '',
+            questionType: card.content.questionType || ''
+          };
+          switch (card.content.questionType) {
+            case 'Choice':
+            case 'Verificación':
+            case 'Desplegable':
+              baseQuestion.options = card.content.options || [];
+              break;
+            case 'Escala':
+              baseQuestion.min = card.content.min || 1;
+              baseQuestion.max = card.content.max || 5;
+              baseQuestion.labelMin = card.content.labelMin || '';
+              baseQuestion.labelMax = card.content.labelMax || '';
+              break;
+            case 'Archivos':
+              baseQuestion.fileConfig = {
+                maxSize: card.content.fileConfig?.maxSize || '10MB',
+                maxFiles: card.content.fileConfig?.maxCount || 1,
+                allowedTypes: card.content.fileConfig?.allowedTypes || ['pdf']
+              };
+              break;
+          }
+          cleanedCard.content = baseQuestion;
+          break;
+        case 'multimedia':
+          cleanedCard.content = {
+            fileUrl: card.content.fileUrl || '',
+            fileType: card.content.fileType || '',
+            caption: card.content.caption || ''
+          };
+          break;
+      }
+      return cleanedCard;
+    });
 
-    // 1. Filtrar cards no definidas y limpiar el contenido
-    const cardsFiltradas = encuestaData.cards
-      .filter(card => card.type) // Eliminar cards sin tipo
-      .map(card => {
-        // Clonar la card para no modificar el estado directamente
-        const cleanedCard = {
-          id: card.id,
-          type: card.type,
-          content: { ...card.content }
-        };
+  // 2. Crear el objeto final de la encuesta
+  const encuestaCompleta = {
+    name: encuestaData.nombre || '',
+    state: encuestaData.estado || '',
+    category: categoriaNombre,
+    image: encuestaData.imagenUrl || '',
+    cards: cardsFiltradas
+  };
 
-        // Limpieza específica para cada tipo de card
-        switch (card.type) {
-          case 'text':
-            // Asegurar que title y description existan
-            cleanedCard.content = {
-              title: card.content.title || '',
-              description: card.content.description || ''
-            };
-            break;
+  try {
+    // Enviar al backend
+    await crearEncuesta(encuestaCompleta);
+    alert('Encuesta enviada correctamente al backend');
 
-          case 'question':
-            // Estructura base para preguntas
-            const baseQuestion = {
-              questionText: card.content.questionText || '',
-              questionType: card.content.questionType || ''
-            };
-
-            // Campos adicionales según el tipo de pregunta
-            switch (card.content.questionType) {
-              case 'Choice':
-              case 'Verificación':
-              case 'Desplegable':
-                baseQuestion.options = card.content.options || [];
-                break;
-
-              case 'Escala':
-                baseQuestion.min = card.content.min || 1;
-                baseQuestion.max = card.content.max || 5;
-                baseQuestion.labelMin = card.content.labelMin || '';
-                baseQuestion.labelMax = card.content.labelMax || '';
-                break;
-
-              case 'Archivos':
-                baseQuestion.fileConfig = {
-                  maxSize: card.content.fileConfig?.maxSize || '10MB',
-                  maxFiles: card.content.fileConfig?.maxCount || 1,
-                  allowedTypes: card.content.fileConfig?.allowedTypes || ['pdf']
-                };
-                break;
-            }
-
-            cleanedCard.content = baseQuestion;
-            break;
-
-          case 'multimedia':
-            cleanedCard.content = {
-              fileUrl: card.content.fileUrl || '',
-              fileType: card.content.fileType || '',
-              caption: card.content.caption || ''
-            };
-            break;
-        }
-
-        return cleanedCard;
-      });
-
-    // 2. Crear el objeto final de la encuesta
-    const now = new Date();
-    const encuestaCompleta = {
-      id: Date.now(),
-      name: encuestaData.nombre || '',
-      state: encuestaData.estado || '',
-      category: categoriaNombre,
-      date: formatFechaArgentina(now), // <-- Fecha en formato argentino
-      image: encuestaData.imagenUrl || '',
-      cards: cardsFiltradas
-    };
-
-    // 3. Guardar en localStorage
+    // Opcional: guardar en localStorage y descargar JSON
     const encuestasGuardadas = JSON.parse(localStorage.getItem('encuestas')) || [];
     encuestasGuardadas.push(encuestaCompleta);
     localStorage.setItem('encuestas', JSON.stringify(encuestasGuardadas));
 
-    // 4. Descargar JSON
     const dataStr = JSON.stringify(encuestaCompleta, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
     const nombreArchivo = `encuesta_${encuestaData.nombre || 'sin_nombre'}_${new Date().toISOString().slice(0, 10)}.json`;
@@ -200,7 +177,12 @@ function Admin_Encuestas() {
     linkElement.setAttribute('href', dataUri);
     linkElement.setAttribute('download', nombreArchivo);
     linkElement.click();
-  };
+
+  } catch (error) {
+    alert('Error al enviar la encuesta al backend');
+    console.error(error);
+  }
+};
 
   return (
     <>
