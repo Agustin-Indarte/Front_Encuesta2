@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { Modal, Button, FormControl, Table, Row, Col } from 'react-bootstrap';
 import styles from './CategoryModal.module.css';
+import {crearCategoria} from '../../../api';
 
 function CategoryModal({ show, onHide, categories, onSave, onDelete, categoriesLoaded }) {
   const [name, setName] = useState('');
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (name.trim()) {
-      onSave(name);
-      setName('');
+      await crearCategoria(name);
+    alert('Categoria enviada correctamente al backend');
     }
   };
 
