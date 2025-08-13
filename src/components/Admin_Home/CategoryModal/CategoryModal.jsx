@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Button, FormControl, Table, Row, Col } from 'react-bootstrap';
 import styles from './CategoryModal.module.css';
-import {crearCategoria} from '../../../api';
+import { crearCategoria } from '../../../api';
 
 function CategoryModal({ show, onHide, categories, onSave, onDelete, categoriesLoaded }) {
   const [name, setName] = useState('');
@@ -9,7 +9,7 @@ function CategoryModal({ show, onHide, categories, onSave, onDelete, categoriesL
   const handleSave = async () => {
     if (name.trim()) {
       await crearCategoria(name);
-    alert('Categoria enviada correctamente al backend');
+      alert('Categoria enviada correctamente al backend');
     }
   };
 
@@ -47,11 +47,11 @@ function CategoryModal({ show, onHide, categories, onSave, onDelete, categoriesL
               </thead>
               <tbody>
                 {categories.map(c => (
-                  <tr key={c.id}>
-                    <td>{c.id}</td>
-                    <td>{c.fecha}</td>
-                    <td>{c.nombre.toUpperCase()}</td>
-                    <td  className='text-center'>
+                  <tr key={c._id || c.id}>
+                    <td>{c._id || c.id}</td>
+                    <td>{new Date(c.createdAt).toLocaleDateString()}</td>
+                    <td>{(c.name || '').toUpperCase()}</td>
+                    <td className='text-center'>
                       <Button
                         variant="danger"
                         size="sm"
