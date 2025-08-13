@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AdminHeader, SurveyTable, CategoryModal,  Navbar, AdmFooter,DeleteConfirm } from '../../components';
-import styles from './Admin_Home.module.css';
 import {useCategories} from '../../context/EncuestasContext'
+import { obtenerEncuestas, eliminarEncuesta, actualizarEncuesta } from "../../api/apiAdministrador/Encuestas";
 
 
 
@@ -16,30 +16,9 @@ const loadCategories = () => {
   }
 };
 
-const loadSurveys = () => {
-  try {
-    const saved = localStorage.getItem('encuestas');
-    let arr = saved ? JSON.parse(saved) : [];
-    // Si alguna encuesta tiene categoria como objeto, conviértelo a string
-    arr = arr.map(e => ({
-      ...e,
-      categoria: typeof e.categoria === 'object' && e.categoria !== null
-        ? e.categoria.nombre
-        : e.categoria
-    }));
-    // Opcional: guarda la corrección en localStorage
-    localStorage.setItem('encuestas', JSON.stringify(arr));
-    return arr;
-  } catch (error) {
-    console.error('Error loading surveys:', error);
-    return [];
-  }
-};
-
-
 function Admin_Home() {
   const { categories, setCategories } = useCategories();
- const [surveys, setSurveys] = useState(loadSurveys());
+  const [surveys, setSurveys] = useState([]);
   const [filter, setFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState(null);
   const [sortedSurveys, setSortedSurveys] = useState(null);
@@ -50,8 +29,16 @@ function Admin_Home() {
   const [selectedSurvey, setSelectedSurvey] = useState(null);
   const [delMessage, setDelMessage] = useState('');
 
-   useEffect(() => {
-    setSurveys(loadSurveys());
+  useEffect(() => {
+    const fetchSurveys = async () => {
+      try {
+        const data = await obtenerEncuestas();
+        setSurveys(data);
+      } catch (error) {
+        setSurveys([]);
+      }
+    };
+    fetchSurveys();
   }, []);
 
   // Guardar categorías cuando cambian
@@ -88,8 +75,8 @@ function Admin_Home() {
     str ? str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() : '';
 
   const filtered = (sortedSurveys || surveys).filter(s => {
-    const matchesSearch = !filter || normalize(s.nombre).includes(normalize(filter));
-    const matchesCategory = !categoryFilter || normalize(s.categoria) === normalize(categoryFilter);
+    const matchesSearch = !filter || (s.nombre || s.name || '').toLowerCase().includes(filter.toLowerCase());
+    const matchesCategory = !categoryFilter || (s.categoria || s.category || '').toLowerCase() === categoryFilter?.toLowerCase();
     return matchesSearch && matchesCategory;
   });
 
@@ -122,11 +109,14 @@ function Admin_Home() {
   };
 
   // FUNCIÓN PARA ELIMINAR ENCUESTA
-  const deleteSurvey = () => {
+  const deleteSurvey = async () => {
     if (!selectedSurvey) return;
-    const updated = surveys.filter(s => s !== selectedSurvey);
-    setSurveys(updated);
-    localStorage.setItem('encuestas', JSON.stringify(updated));
+    try {
+      await eliminarEncuesta(selectedSurvey._id || selectedSurvey.id);
+      setSurveys(prev => prev.filter(s => (s._id || s.id) !== (selectedSurvey._id || selectedSurvey.id)));
+    } catch (e) {
+      alert('Error al eliminar la encuesta');
+    }
     setShowDel(false);
     setSelectedSurvey(null);
   };
@@ -137,7 +127,20 @@ function Admin_Home() {
     setShowDel(true);
   };
 
-  
+  const handleToggleState = async (survey, newActive) => {
+    const id = survey._id || survey.id;
+    const nuevoEstado = newActive ? 'activa' : 'inactiva';
+    // Optimista: actualizar UI
+    setSurveys(prev => prev.map(s => ( (s._id || s.id) === id ? { ...s, estado: nuevoEstado, state: nuevoEstado } : s )));
+    try {
+      await actualizarEncuesta(id, { ...survey, estado: nuevoEstado, state: nuevoEstado });
+    } catch (err) {
+      // Revertir si falla
+      setSurveys(prev => prev.map(s => ( (s._id || s.id) === id ? { ...s, estado: survey.estado, state: survey.state } : s )));
+      alert('Error al actualizar estado');
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -150,6 +153,7 @@ function Admin_Home() {
           data={filtered}
           onSelect={handleSelectSurvey}
           onDelete={handleDeleteClick}
+          onToggleState={handleToggleState}
         />
 
         <AdmFooter

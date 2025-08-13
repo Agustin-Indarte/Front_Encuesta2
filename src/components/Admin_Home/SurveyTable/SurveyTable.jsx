@@ -1,11 +1,12 @@
 import React from 'react';
 import { Table, Button } from 'react-bootstrap';
 import styles from './SurveyTable.module.css';
+import Switch from '../../Switch/Switch';
 
-function SurveyTable({ data, onSelect, onDelete }) {
+function SurveyTable({ data, onSelect, onDelete, onToggleState }) {
   return (
     <div className={styles.tableContainer}>
-      <Table striped bordered hover responsive className="mb-0"> {/* Quitamos la clase de módulo CSS aquí */}
+      <Table striped bordered hover responsive className="mb-0">
         <thead className={styles.thead}>
           <tr>
             <th>ID</th>
@@ -17,31 +18,39 @@ function SurveyTable({ data, onSelect, onDelete }) {
           </tr>
         </thead>
         <tbody>
-          {data.map((s, i) => (
-            <tr 
-              key={s.id} 
-              className={i % 2 ? styles.even : ''} 
-              onClick={() => onSelect(s)}
-            >
-              <td>{s.id}</td>
-              <td>{s.date}</td>
-              <td>{s.category}</td>
-              <td>{s.name}</td>
-              <td>{s.state}</td>
-              <td>
-                <Button 
-                  variant="danger" 
-                  size="sm" 
-                  onClick={e => { 
-                    e.stopPropagation(); 
-                    onDelete(s); 
-                  }}
-                >
-                  Eliminar
-                </Button>
-              </td>
-            </tr>
-          ))}
+          {data.map((s, i) => {
+            const active = (s.estado || s.state || '').toLowerCase() === 'activa';
+            return (
+              <tr
+                key={s._id || s.id}
+                className={i % 2 ? styles.even : ''}
+                onClick={() => onSelect && onSelect(s)}
+              >
+                <td>{s._id || s.id}</td>
+                <td>{s.fecha || s.date || (s.createdAt ? new Date(s.createdAt).toLocaleDateString() : '')}</td>
+                <td>{s.categoria || s.category}</td>
+                <td>{s.nombre || s.name}</td>
+                <td>
+                  <Switch
+                    checked={active}
+                    onChange={() => onToggleState && onToggleState(s, !active)}
+                  />
+                </td>
+                <td>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={e => {
+                      e.stopPropagation();
+                      onDelete && onDelete(s);
+                    }}
+                  >
+                    Eliminar
+                  </Button>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </Table>
     </div>
