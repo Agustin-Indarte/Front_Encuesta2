@@ -3,64 +3,49 @@ import './BodyUserHome.css';
 import { useEffect, useState } from 'react';
 import GridCard from '../GridCard/GridCard';
 import {useCategories} from '../../../context/EncuestasContext'
-
+import { obtenerEncuestas } from '../../../api/apiAdministrador/Encuestas';
 
 function BodyUserHome() {
     const { categories } = useCategories();
     const [surveys, setSurveys] = useState([]);
+    const [allSurveys, setAllSurveys] = useState([]);
 
-  
-   // Cargar encuestas desde localStorage al montar
     useEffect(() => {
-        loadSurveys();
+        const fetchSurveys = async () => {
+            try {
+                const data = await obtenerEncuestas();
+                setSurveys(data);
+                setAllSurveys(data);
+            } catch (error) {
+                setSurveys([]);
+                setAllSurveys([]);
+            }
+        };
+        fetchSurveys();
     }, []);
 
-    // Cargar encuestas desde localStorage
-    const loadSurveys = () => {
-        try {
-            const data = JSON.parse(localStorage.getItem('encuestas')) || [];
-            setSurveys(data);
-        } catch (error) {
-            console.error('Error al cargar las encuestas', error);
-        }
-    };
-
     function handleSeleccion(cat) {
-        const data = JSON.parse(localStorage.getItem('encuestas')) || [];
         if (cat === 'Todas') {
-            setSurveys(data);
+            setSurveys(allSurveys);
         } else {
-            const filtered = data.filter((item) => {
+            const filtered = allSurveys.filter((item) => {
                 if (typeof item.category === 'object' && item.category !== null) {
                     return item.category.nombre === cat;
                 }
-                return item.category === cat;
+                return (item.categoria || item.category) === cat;
             });
             setSurveys(filtered);
         }
     }
 
-
     function handleSeleccionOrder(orderBy) {
-        if (orderBy === 'A-Z') {
-            setSurveys([...surveys].sort((a, b) => a.name.localeCompare(b.name)));
-        } else if (orderBy === 'Z-A') {
-            setSurveys([...surveys].sort((a, b) => b.name.localeCompare(a.name)));
-        } else {
-            console.log('filtar por Las mas nuevas');
-        }
-    }
-
-   function handleSeleccionOrder(orderBy) {
         let sorted = [...surveys];
-        // Usar el título de la primera card tipo text para ordenar
         if (orderBy === 'A-Z') {
             sorted.sort((a, b) => getFirstCardTitle(a).localeCompare(getFirstCardTitle(b)));
         } else if (orderBy === 'Z-A') {
             sorted.sort((a, b) => getFirstCardTitle(b).localeCompare(getFirstCardTitle(a)));
         } else {
-            // Los más nuevos
-            sorted.sort((a, b) => new Date(b.fechaCreacion || b.date) - new Date(a.fechaCreacion || a.date));
+            sorted.sort((a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date));
         }
         setSurveys(sorted);
     }
@@ -69,7 +54,9 @@ function BodyUserHome() {
     function getFirstCard(survey) {
         return survey.cards?.find(card => card.type === 'text') || {};
     }
-    
+    function getFirstCardTitle(survey) {
+        return getFirstCard(survey).content?.title || survey.name || '';
+    }
     function getFirstCardDescription(survey) {
         return getFirstCard(survey).content?.description || '';
     }
@@ -77,23 +64,21 @@ function BodyUserHome() {
         return survey.imagen || survey.image || 'https://via.placeholder.com/150';
     }
 
-   const gridSurveys = surveys.map(s => ({
-    id: s.id,
-    name: s.name,
-    description: getFirstCardDescription(s),
-    image: getImage(s),
-    category:
-        (typeof s.categoria === 'object' && s.categoria !== null && s.categoria.nombre) ||
-        s.category ||
-        '',
-    cards: s.cards 
-}));
+    const gridSurveys = surveys.map(s => ({
+        id: s._id || s.id,
+        name: s.name,
+        description: getFirstCardDescription(s),
+        image: getImage(s),
+        category:
+            (typeof s.categoria === 'object' && s.categoria !== null && s.categoria.nombre) ||
+            s.category ||
+            '',
+        cards: s.cards 
+    }));
 
     return (
         <div className='container_body'>
-
             <Row className="w-100 mb-4">
-            
                 <Col md={4} className=' ms-3 d-flex align-items-center justify-content-end '>
                     <h2 className='title-page mb-0'>NUESTRAS ENCUESTAS</h2>
                 </Col>
@@ -109,8 +94,6 @@ function BodyUserHome() {
                         </Button>
                     </InputGroup>
                 </Col>
-
-
                 <Col md={3} className='d-flex gap-2'>
                     <div className='w-50'>
                         <Dropdown as={ButtonGroup} className='w-100'>
@@ -123,7 +106,6 @@ function BodyUserHome() {
                             </Dropdown.Menu>
                         </Dropdown>
                     </div>
-
                     <div className='w-50'>
                         <Dropdown className='w-100'>
                             <Dropdown.Toggle variant='secondary' id="dropdown-basic" className='w-100'>

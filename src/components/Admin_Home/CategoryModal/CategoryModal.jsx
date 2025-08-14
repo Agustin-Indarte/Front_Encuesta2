@@ -26,14 +26,26 @@ function CategoryModal({ show, onHide, categories, onSave, onDelete }) {
             />
           </Form.Group>
         </Form>
-        <ul>
-          {categories.map(cat => (
-            <li key={cat._id} style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <span>{cat.nombre}</span>
-              <Button variant="danger" size="sm" onClick={() => onDelete(cat)}>Eliminar</Button>
-            </li>
-          ))}
-        </ul>
+        <table className="table table-bordered mt-3">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nombre</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {categories.map(cat => (
+              <tr key={cat._id}>
+                <td>{cat._id}</td>
+                <td>{cat.name}</td>
+                <td>
+                  <Button variant="danger" size="sm" onClick={() => onDelete(cat)}>Eliminar</Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={onHide}>Cerrar</Button>

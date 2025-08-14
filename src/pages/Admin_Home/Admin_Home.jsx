@@ -7,7 +7,7 @@ import {
   AdmFooter,
   DeleteConfirm
 } from '../../components';
-import { getCategories, crearCategoria, eliminarCategoria } from '../../api';
+import { getCategories, crearCategoria, eliminarCategoria,obtenerEncuestas, eliminarEncuesta, actualizarEncuesta } from '../../api';
 import styles from './Admin_Home.module.css';
 
 function Admin_Home() {
@@ -24,22 +24,25 @@ function Admin_Home() {
 
   // Cargar categorías y encuestas del backend
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchSurveys = async () => {
       try {
-        const [cats, survs] = await Promise.all([getCategories(), getSurveys()]);
+        const data = await obtenerEncuestas();
+        setSurveys(data);
+
+        const cats = await getCategories();
         setCategories(cats);
-        setSurveys(survs);
-      } catch (err) {
-        console.error('Error cargando datos:', err);
+      } catch (error) {
+        console.error('Error cargando datos:', error);
+        setSurveys([]);
       }
     };
-    fetchData();
+    fetchSurveys();
   }, []);
 
   const addCategory = async (name) => {
     if (!name.trim()) return;
     try {
-      await crearCategoria({ nombre: name.trim() });
+      await crearCategoria({ name: name.trim() });
       const updated = await getCategories();
       setCategories(updated);
     } catch (err) {
@@ -48,7 +51,7 @@ function Admin_Home() {
   };
 
   const deleteCategoryHandler = async (category) => {
-    if (!window.confirm(`¿Eliminar la categoría "${category.nombre}"?`)) return;
+    if (!window.confirm(`¿Eliminar la categoría "${category.name}"?`)) return;
     try {
       await eliminarCategoria(category._id);
       const updated = await getCategories();
@@ -65,8 +68,8 @@ function Admin_Home() {
     str ? str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase() : '';
 
   const filtered = (sortedSurveys || surveys).filter(s => {
-    const matchesSearch = !filter || normalize(s.nombre).includes(normalize(filter));
-    const matchesCategory = !categoryFilter || normalize(s.categoria) === normalize(categoryFilter);
+    const matchesSearch = !filter || (s.nombre || s.name || '').toLowerCase().includes(filter.toLowerCase());
+    const matchesCategory = !categoryFilter || (s.categoria || s.category || '').toLowerCase() === categoryFilter?.toLowerCase();
     return matchesSearch && matchesCategory;
   });
 
@@ -82,16 +85,43 @@ function Admin_Home() {
     setCategoryFilter(null);
   };
 
+
+  
+
+  const handleSelectSurvey = (s) => {
+    setSelectedSurvey(s);
+  };
+
+  // FUNCIÓN PARA ELIMINAR ENCUESTA
   const deleteSurvey = async () => {
     if (!selectedSurvey) return;
     try {
-      await eliminarSurvey(selectedSurvey._id);
-      const updated = await getSurveys();
-      setSurveys(updated);
-      setShowDel(false);
-      setSelectedSurvey(null);
+      await eliminarEncuesta(selectedSurvey._id || selectedSurvey.id);
+      setSurveys(prev => prev.filter(s => (s._id || s.id) !== (selectedSurvey._id || selectedSurvey.id)));
+    } catch (e) {
+      alert('Error al eliminar la encuesta');
+    }
+    setShowDel(false);
+    setSelectedSurvey(null);
+  };
+
+  const handleDeleteClick = (s) => {
+    setDelMessage(`¿Eliminar encuesta "${s.nombre}"?`);
+    setSelectedSurvey(s);
+    setShowDel(true);
+  };
+
+  const handleToggleState = async (survey, newActive) => {
+    const id = survey._id || survey.id;
+    const nuevoEstado = newActive ? 'activa' : 'inactiva';
+    // Optimista: actualizar UI
+    setSurveys(prev => prev.map(s => ( (s._id || s.id) === id ? { ...s, estado: nuevoEstado, state: nuevoEstado } : s )));
+    try {
+      await actualizarEncuesta(id, { ...survey, estado: nuevoEstado, state: nuevoEstado });
     } catch (err) {
-      console.error(err);
+      // Revertir si falla
+      setSurveys(prev => prev.map(s => ( (s._id || s.id) === id ? { ...s, estado: survey.estado, state: survey.state } : s )));
+      alert('Error al actualizar estado');
     }
   };
 
@@ -103,12 +133,9 @@ function Admin_Home() {
 
         <SurveyTable
           data={filtered}
-          onSelect={setSelectedSurvey}
-          onDelete={(s) => {
-            setDelMessage(`¿Eliminar encuesta "${s.nombre}"?`);
-            setSelectedSurvey(s);
-            setShowDel(true);
-          }}
+          onSelect={handleSelectSurvey}
+          onDelete={handleDeleteClick}
+          onToggleState={handleToggleState}
         />
 
         <AdmFooter

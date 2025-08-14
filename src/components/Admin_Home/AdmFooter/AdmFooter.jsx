@@ -80,11 +80,11 @@ function AdmFooter({
               <Dropdown.Item 
                 key={cat._id} 
                 onClick={() => {
-                  onCategorySelect(cat.nombre);
+                  onCategorySelect(cat.name);
                   onSearch('');
                 }}
               >
-                {cat.nombre}
+                {cat.name}
               </Dropdown.Item>
             ))}
           </Dropdown.Menu>

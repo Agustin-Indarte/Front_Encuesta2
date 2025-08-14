@@ -164,20 +164,6 @@ function Admin_Encuestas() {
     await crearEncuesta(encuestaCompleta);
     alert('Encuesta enviada correctamente al backend');
 
-    // Opcional: guardar en localStorage y descargar JSON
-    const encuestasGuardadas = JSON.parse(localStorage.getItem('encuestas')) || [];
-    encuestasGuardadas.push(encuestaCompleta);
-    localStorage.setItem('encuestas', JSON.stringify(encuestasGuardadas));
-
-    const dataStr = JSON.stringify(encuestaCompleta, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-    const nombreArchivo = `encuesta_${encuestaData.nombre || 'sin_nombre'}_${new Date().toISOString().slice(0, 10)}.json`;
-
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', nombreArchivo);
-    linkElement.click();
-
   } catch (error) {
     alert('Error al enviar la encuesta al backend');
     console.error(error);
