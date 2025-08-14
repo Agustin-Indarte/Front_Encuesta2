@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AdminHeader, SurveyTable, CategoryModal,  Navbar, AdmFooter,DeleteConfirm } from '../../components';
 import {useCategories} from '../../context/EncuestasContext'
-import { obtenerEncuestas, eliminarEncuesta, actualizarEncuesta } from "../../api/apiAdministrador/Encuestas";
+import { obtenerEncuestas, eliminarEncuesta, actualizarEncuesta } from "../../api";
 
 
 
