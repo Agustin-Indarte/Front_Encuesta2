@@ -1,87 +1,64 @@
 import React, { useState, useEffect } from 'react';
-import { AdminHeader, SurveyTable, CategoryModal,  Navbar, AdmFooter,DeleteConfirm } from '../../components';
+import {
+  AdminHeader,
+  SurveyTable,
+  CategoryModal,
+  Navbar,
+  AdmFooter,
+  DeleteConfirm
+} from '../../components';
+import { getCategories, crearCategoria, eliminarCategoria } from '../../api';
 import styles from './Admin_Home.module.css';
-import {useCategories} from '../../context/EncuestasContext'
-
-
-
-// Función para cargar categorías desde localStorage
-const loadCategories = () => {
-  try {
-    const saved = localStorage.getItem('surveyCategories');
-    return saved ? JSON.parse(saved) : [];
-  } catch (error) {
-    console.error('Error loading categories:', error);
-    return [];
-  }
-};
-
-const loadSurveys = () => {
-  try {
-    const saved = localStorage.getItem('encuestas');
-    let arr = saved ? JSON.parse(saved) : [];
-    // Si alguna encuesta tiene categoria como objeto, conviértelo a string
-    arr = arr.map(e => ({
-      ...e,
-      categoria: typeof e.categoria === 'object' && e.categoria !== null
-        ? e.categoria.nombre
-        : e.categoria
-    }));
-    // Opcional: guarda la corrección en localStorage
-    localStorage.setItem('encuestas', JSON.stringify(arr));
-    return arr;
-  } catch (error) {
-    console.error('Error loading surveys:', error);
-    return [];
-  }
-};
-
 
 function Admin_Home() {
-  const { categories, setCategories } = useCategories();
- const [surveys, setSurveys] = useState(loadSurveys());
+  const [categories, setCategories] = useState([]);
+  const [surveys, setSurveys] = useState([]);
   const [filter, setFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState(null);
   const [sortedSurveys, setSortedSurveys] = useState(null);
   const [showCat, setShowCat] = useState(false);
 
-  // ESTADOS PARA EL MODAL DE ELIMINAR ENCUESTA
   const [showDel, setShowDel] = useState(false);
   const [selectedSurvey, setSelectedSurvey] = useState(null);
   const [delMessage, setDelMessage] = useState('');
 
-   useEffect(() => {
-    setSurveys(loadSurveys());
+  // Cargar categorías y encuestas del backend
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [cats, survs] = await Promise.all([getCategories(), getSurveys()]);
+        setCategories(cats);
+        setSurveys(survs);
+      } catch (err) {
+        console.error('Error cargando datos:', err);
+      }
+    };
+    fetchData();
   }, []);
 
-  // Guardar categorías cuando cambian
-  useEffect(() => {
-    localStorage.setItem('surveyCategories', JSON.stringify(categories));
-  }, [categories]);
-
-  // Manejo de categorías
-  const addCategory = (name) => {
+  const addCategory = async (name) => {
     if (!name.trim()) return;
-    
-    const newCategory = {
-      id: Date.now(),
-      fecha: new Date().toLocaleDateString('es-AR'),
-      nombre: name.trim()
-    };
-    
-    setCategories(prev => [...prev, newCategory]);
+    try {
+      await crearCategoria({ nombre: name.trim() });
+      const updated = await getCategories();
+      setCategories(updated);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const deleteCategory = (category) => {
+  const deleteCategoryHandler = async (category) => {
     if (!window.confirm(`¿Eliminar la categoría "${category.nombre}"?`)) return;
-    
-    // 1. Eliminar la categoría
-    setCategories(prev => prev.filter(c => c.id !== category.id));
-    
-    // 2. Actualizar encuestas que usaban esta categoría
-    setSurveys(prev => prev.map(s => 
-      s.categoria === category.nombre ? { ...s, categoria: 'General' } : s
-    ));
+    try {
+      await eliminarCategoria(category._id);
+      const updated = await getCategories();
+      setCategories(updated);
+      setSurveys(prev => prev.map(s =>
+        s.categoria === category.nombre ? { ...s, categoria: 'General' } : s
+      ));
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const normalize = (str) =>
@@ -94,62 +71,44 @@ function Admin_Home() {
   });
 
   const handleSortAZ = () => {
-    const sorted = [...surveys].sort((a, b) => a.nombre.localeCompare(b.nombre));
-    setSortedSurveys(sorted);
+    setSortedSurveys([...surveys].sort((a, b) => a.nombre.localeCompare(b.nombre)));
     setFilter('');
     setCategoryFilter(null);
   };
 
   const handleSortByDate = () => {
-    const sorted = [...surveys].sort((a, b) => {
-      const [d1, m1, y1] = a.fecha.split('/').map(Number);
-      const [d2, m2, y2] = b.fecha.split('/').map(Number);
-      return new Date(y2, m2 - 1, d2) - new Date(y1, m1 - 1, d1);
-    });
-    setSortedSurveys(sorted);
+    setSortedSurveys([...surveys].sort((a, b) => new Date(b.fecha) - new Date(a.fecha)));
     setFilter('');
     setCategoryFilter(null);
   };
 
-  const handleCategorySelect = (name) => {
-    setCategoryFilter(name);
-    setFilter('');
-    setSortedSurveys(null);
-  };
-
-  const handleSelectSurvey = (s) => {
-    setSelectedSurvey(s);
-  };
-
-  // FUNCIÓN PARA ELIMINAR ENCUESTA
-  const deleteSurvey = () => {
+  const deleteSurvey = async () => {
     if (!selectedSurvey) return;
-    const updated = surveys.filter(s => s !== selectedSurvey);
-    setSurveys(updated);
-    localStorage.setItem('encuestas', JSON.stringify(updated));
-    setShowDel(false);
-    setSelectedSurvey(null);
+    try {
+      await eliminarSurvey(selectedSurvey._id);
+      const updated = await getSurveys();
+      setSurveys(updated);
+      setShowDel(false);
+      setSelectedSurvey(null);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  const handleDeleteClick = (s) => {
-    setDelMessage(`¿Eliminar encuesta "${s.nombre}"?`);
-    setSelectedSurvey(s);
-    setShowDel(true);
-  };
-
-  
   return (
     <>
       <Navbar />
       <div className="Container-Page">
-        <AdminHeader
-          onOpenCategory={() => setShowCat(true)}
-        />
+        <AdminHeader onOpenCategory={() => setShowCat(true)} />
 
         <SurveyTable
           data={filtered}
-          onSelect={handleSelectSurvey}
-          onDelete={handleDeleteClick}
+          onSelect={setSelectedSurvey}
+          onDelete={(s) => {
+            setDelMessage(`¿Eliminar encuesta "${s.nombre}"?`);
+            setSelectedSurvey(s);
+            setShowDel(true);
+          }}
         />
 
         <AdmFooter
@@ -157,18 +116,21 @@ function Admin_Home() {
           onSortAZ={handleSortAZ}
           onSortByDate={handleSortByDate}
           categories={categories}
-          onCategorySelect={handleCategorySelect}
+          onCategorySelect={(name) => {
+            setCategoryFilter(name);
+            setFilter('');
+            setSortedSurveys(null);
+          }}
         />
 
-         <CategoryModal
+        <CategoryModal
           show={showCat}
           onHide={() => setShowCat(false)}
           categories={categories}
           onSave={addCategory}
-          onDelete={deleteCategory}
+          onDelete={deleteCategoryHandler}
         />
 
-        {/* MODAL DE CONFIRMACIÓN DE ELIMINACIÓN */}
         <DeleteConfirm
           show={showDel}
           onHide={() => setShowDel(false)}
@@ -181,3 +143,6 @@ function Admin_Home() {
 }
 
 export default Admin_Home;
+
+
+

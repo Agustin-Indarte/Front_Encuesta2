@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { Button, Dropdown, Row, Col, } from 'react-bootstrap';
+import React, { useState } from 'react'; 
+import { Button, Dropdown, Row, Col } from 'react-bootstrap';
 import { FaSortAlphaDown, FaClock, FaSearch } from 'react-icons/fa';
-import "./AdmHomeFooter.css"
-
+import "./AdmHomeFooter.css";
 
 function AdmFooter({
   onSearch,
@@ -25,7 +24,7 @@ function AdmFooter({
     } else if (e.key === 'Escape') {
       setIsSearching(false);
       setSearchText('');
-      onSearch(''); // Limpiar búsqueda
+      onSearch('');
     }
   };
 
@@ -42,7 +41,7 @@ function AdmFooter({
 
   return (
     <Row className="w-100 mt-4">
-      <Col md={4} className=''>
+      <Col md={4}>
         {isSearching ? (
           <input
             className="AdmHome-inputBuscar"
@@ -73,16 +72,16 @@ function AdmFooter({
           <Dropdown.Menu>
             <Dropdown.Item onClick={() => {
               onCategorySelect(null);
-              onSearch(''); // Limpiar búsqueda al cambiar categoría
+              onSearch('');
             }}>
               Todas
             </Dropdown.Item>
             {categories.map(cat => (
               <Dropdown.Item 
-                key={cat.id} 
+                key={cat._id} 
                 onClick={() => {
                   onCategorySelect(cat.nombre);
-                  onSearch(''); // Limpiar búsqueda al cambiar categoría
+                  onSearch('');
                 }}
               >
                 {cat.nombre}
@@ -100,14 +99,14 @@ function AdmFooter({
           <Dropdown.Menu>
             <Dropdown.Item onClick={() => {
               onSortAZ();
-              onSearch(''); // Limpiar búsqueda al ordenar
+              onSearch('');
             }}>
               <FaSortAlphaDown className="me-2" />
               Alfabéticamente
             </Dropdown.Item>
             <Dropdown.Item onClick={() => {
               onSortByDate();
-              onSearch(''); // Limpiar búsqueda al ordenar
+              onSearch('');
             }}>
               <FaClock className="me-2" />
               Más recientes
@@ -116,7 +115,7 @@ function AdmFooter({
         </Dropdown>
       </Col>
     </Row>
-  )
+  );
 }
 
 export default AdmFooter;
