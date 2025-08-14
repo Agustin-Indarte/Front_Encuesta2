@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { Navbar, AdmGridCards } from '../../components';
 import { Row, Form, Col, Button } from 'react-bootstrap';
-import { useCategories } from '../../context/EncuestasContext'
+import { getCategories } from '../../api';
 import './Admin_Encuestas.css'
 
 import { crearEncuesta } from '../../api'; // importa la función
 
 function Admin_Encuestas() {
-  const { categories } = useCategories();
+  const [categories, setCategories] = useState([]);
   const initialized = useRef(false);
   const [encuestaData, setEncuestaData] = useState({
     nombre: '',
@@ -17,6 +17,19 @@ function Admin_Encuestas() {
     cards: []
   });
   const [activeCardId, setActiveCardId] = useState(null);
+
+  // Cargar categorías del backend
+    useEffect(() => {
+      const fetchCategorias = async () => {
+        try {
+          const cats = await getCategories();
+          setCategories(cats);
+        } catch (error) {
+          console.error('Error cargando datos:', error);
+        }
+      };
+      fetchCategorias();
+    }, []);
 
   useEffect(() => {
     if (!initialized.current && encuestaData.cards.length === 0) {
@@ -28,6 +41,8 @@ function Admin_Encuestas() {
         ]
       }));
       initialized.current = true;
+
+      
     }
   }, [encuestaData.cards]);
 
@@ -218,7 +233,7 @@ function Admin_Encuestas() {
               <option value="">Seleccionar Categoría</option>
               {categories.map((category) => (
                 <option key={category.id} value={category.id}>
-                  {category.nombre}
+                  {category.name}
                 </option>
               ))}
             </Form.Select>

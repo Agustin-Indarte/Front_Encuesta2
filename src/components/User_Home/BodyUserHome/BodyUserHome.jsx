@@ -2,26 +2,28 @@ import { Button, ButtonGroup, Dropdown, InputGroup, Form, Row, Col } from 'react
 import './BodyUserHome.css';
 import { useEffect, useState } from 'react';
 import GridCard from '../GridCard/GridCard';
-import {useCategories} from '../../../context/EncuestasContext'
-import { obtenerEncuestas } from '../../../api/apiAdministrador/Encuestas';
+import { obtenerEncuestas, getCategories } from '../../../api';
 
 function BodyUserHome() {
-    const { categories } = useCategories();
+    const [categories, setCategories] = useState([]);
     const [surveys, setSurveys] = useState([]);
     const [allSurveys, setAllSurveys] = useState([]);
 
     useEffect(() => {
-        const fetchSurveys = async () => {
+        const fetchData = async () => {
             try {
                 const data = await obtenerEncuestas();
                 setSurveys(data);
                 setAllSurveys(data);
+
+                const cats = await getCategories();
+                setCategories(cats);
             } catch (error) {
                 setSurveys([]);
                 setAllSurveys([]);
             }
         };
-        fetchSurveys();
+        fetchData();
     }, []);
 
     function handleSeleccion(cat) {
@@ -73,7 +75,7 @@ function BodyUserHome() {
             (typeof s.categoria === 'object' && s.categoria !== null && s.categoria.nombre) ||
             s.category ||
             '',
-        cards: s.cards 
+        cards: s.cards
     }));
 
     return (
@@ -116,9 +118,9 @@ function BodyUserHome() {
                                 {categories.map((cat) => (
                                     <Dropdown.Item
                                         key={cat.id}
-                                        href={`#/categorias/${cat.nombre}`}
-                                        onClick={() => handleSeleccion(cat.nombre)}>
-                                        {cat.nombre}
+                                        href={`#/categorias/${cat.name}`}
+                                        onClick={() => handleSeleccion(cat.name)}>
+                                        {cat.name}
                                     </Dropdown.Item>
                                 ))}
                             </Dropdown.Menu>
@@ -131,4 +133,4 @@ function BodyUserHome() {
     )
 }
 
-export default BodyUserHome
+export default BodyUserHome;
