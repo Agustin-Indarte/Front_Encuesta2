@@ -1,12 +1,20 @@
 import React, { useState } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Modal, Button, Form, Table } from 'react-bootstrap';
 
 function CategoryModal({ show, onHide, categories, onSave, onDelete }) {
   const [categoryName, setCategoryName] = useState('');
 
-  const handleSave = () => {
-    onSave(categoryName);
+  const handleSave = async () => {
+    if (!categoryName.trim()) return;
+    await onSave(categoryName.trim());
     setCategoryName('');
+  };
+
+  const handleKeyDown = async (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      await handleSave();
+    }
   };
 
   return (
@@ -16,17 +24,23 @@ function CategoryModal({ show, onHide, categories, onSave, onDelete }) {
       </Modal.Header>
       <Modal.Body>
         <Form>
-          <Form.Group>
+          <Form.Group className="mb-3">
             <Form.Label>Nueva categoría</Form.Label>
             <Form.Control
               type="text"
+              placeholder="Ingrese nombre"
               value={categoryName}
               onChange={(e) => setCategoryName(e.target.value)}
-              placeholder="Ingrese nombre"
+              onKeyDown={handleKeyDown}
+              autoFocus
             />
           </Form.Group>
+          <Button variant="primary" onClick={handleSave}>
+            Agregar
+          </Button>
         </Form>
-        <table className="table table-bordered mt-3">
+
+        <Table striped bordered hover responsive className="mt-3">
           <thead>
             <tr>
               <th>ID</th>
@@ -35,25 +49,33 @@ function CategoryModal({ show, onHide, categories, onSave, onDelete }) {
             </tr>
           </thead>
           <tbody>
-            {categories.map(cat => (
+            {categories.map((cat) => (
               <tr key={cat._id}>
                 <td>{cat._id}</td>
                 <td>{cat.name}</td>
                 <td>
-                  <Button variant="danger" size="sm" onClick={() => onDelete(cat)}>Eliminar</Button>
+                  <Button
+                    variant="danger"
+                    size="sm"
+                    onClick={() => onDelete(cat)}
+                  >
+                    Eliminar
+                  </Button>
                 </td>
               </tr>
             ))}
           </tbody>
-        </table>
+        </Table>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={onHide}>Cerrar</Button>
-        <Button variant="primary" onClick={handleSave}>Guardar</Button>
+        <Button variant="secondary" onClick={onHide}>
+          Cerrar
+        </Button>
       </Modal.Footer>
     </Modal>
   );
 }
 
 export default CategoryModal;
+
 

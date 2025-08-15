@@ -6,10 +6,10 @@ const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
-// Interceptor para agregar el token en cada request
+// Interceptor para agregar token si lo tenés en localStorage
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('authToken');
+    const token = localStorage.getItem('authToken'); // si usás login
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -19,3 +19,4 @@ api.interceptors.request.use(
 );
 
 export default api;
+

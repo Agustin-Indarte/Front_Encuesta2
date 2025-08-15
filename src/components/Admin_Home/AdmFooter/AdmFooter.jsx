@@ -1,3 +1,4 @@
+// src/components/Admin_Home/AdmFooter/AdmFooter.jsx
 import React, { useState } from 'react'; 
 import { Button, Dropdown, Row, Col } from 'react-bootstrap';
 import { FaSortAlphaDown, FaClock, FaSearch } from 'react-icons/fa';
@@ -24,7 +25,7 @@ function AdmFooter({
     } else if (e.key === 'Escape') {
       setIsSearching(false);
       setSearchText('');
-      onSearch('');
+      onSearch(''); // Limpiar búsqueda
     }
   };
 
@@ -41,6 +42,7 @@ function AdmFooter({
 
   return (
     <Row className="w-100 mt-4">
+      {/* Buscar encuesta */}
       <Col md={4}>
         {isSearching ? (
           <input
@@ -64,6 +66,7 @@ function AdmFooter({
         )}
       </Col>
 
+      {/* Filtrar por categoría */}
       <Col md={4}>
         <Dropdown>
           <Dropdown.Toggle className='w-100 fs-4 fw-bold bg-black border'>
@@ -72,7 +75,7 @@ function AdmFooter({
           <Dropdown.Menu>
             <Dropdown.Item onClick={() => {
               onCategorySelect(null);
-              onSearch('');
+              onSearch(''); // Limpiar búsqueda al cambiar categoría
             }}>
               Todas
             </Dropdown.Item>
@@ -81,7 +84,7 @@ function AdmFooter({
                 key={cat._id} 
                 onClick={() => {
                   onCategorySelect(cat.name);
-                  onSearch('');
+                  onSearch(''); // Limpiar búsqueda al cambiar categoría
                 }}
               >
                 {cat.name}
@@ -91,6 +94,7 @@ function AdmFooter({
         </Dropdown>
       </Col>
 
+      {/* Ordenar encuestas */}
       <Col md={4}>
         <Dropdown>
           <Dropdown.Toggle className='w-100 fs-4 fw-bold bg-black border'>
@@ -99,14 +103,14 @@ function AdmFooter({
           <Dropdown.Menu>
             <Dropdown.Item onClick={() => {
               onSortAZ();
-              onSearch('');
+              onSearch(''); // Limpiar búsqueda al ordenar
             }}>
               <FaSortAlphaDown className="me-2" />
               Alfabéticamente
             </Dropdown.Item>
             <Dropdown.Item onClick={() => {
               onSortByDate();
-              onSearch('');
+              onSearch(''); // Limpiar búsqueda al ordenar
             }}>
               <FaClock className="me-2" />
               Más recientes
@@ -119,3 +123,5 @@ function AdmFooter({
 }
 
 export default AdmFooter;
+
+

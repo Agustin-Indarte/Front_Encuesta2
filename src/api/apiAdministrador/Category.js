@@ -1,6 +1,6 @@
 import api from '../apiConfig';
 
-// Traer todas las categorías
+// Obtener todas las categorías
 export const getCategories = async () => {
   try {
     const res = await api.get('/categories');
@@ -32,4 +32,6 @@ export const eliminarCategoria = async (id) => {
     throw error;
   }
 };
+
+
 

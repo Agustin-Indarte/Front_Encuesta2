@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+// src/pages/Admin_home/Admin_Home.jsx
+import React, { useState, useEffect } from 'react'; 
 import {
   AdminHeader,
   SurveyTable,
@@ -7,7 +8,14 @@ import {
   AdmFooter,
   DeleteConfirm
 } from '../../components';
-import { getCategories, crearCategoria, eliminarCategoria,obtenerEncuestas, eliminarEncuesta, actualizarEncuesta } from '../../api';
+import { 
+  getCategories, 
+  crearCategoria, 
+  eliminarCategoria, 
+  obtenerEncuestas, 
+  eliminarEncuesta, 
+  actualizarEncuesta 
+} from '../../api';
 import styles from './Admin_Home.module.css';
 
 function Admin_Home() {
@@ -24,21 +32,23 @@ function Admin_Home() {
 
   // Cargar categorías y encuestas del backend
   useEffect(() => {
-    const fetchSurveys = async () => {
+    const fetchData = async () => {
       try {
-        const data = await obtenerEncuestas();
-        setSurveys(data);
+        const surveysData = await obtenerEncuestas();
+        setSurveys(surveysData);
 
-        const cats = await getCategories();
-        setCategories(cats);
+        const catsData = await getCategories();
+        setCategories(catsData);
       } catch (error) {
         console.error('Error cargando datos:', error);
         setSurveys([]);
+        setCategories([]);
       }
     };
-    fetchSurveys();
+    fetchData();
   }, []);
 
+  // Agregar categoría
   const addCategory = async (name) => {
     if (!name.trim()) return;
     try {
@@ -50,14 +60,16 @@ function Admin_Home() {
     }
   };
 
+  // Eliminar categoría
   const deleteCategoryHandler = async (category) => {
     if (!window.confirm(`¿Eliminar la categoría "${category.name}"?`)) return;
     try {
       await eliminarCategoria(category._id);
       const updated = await getCategories();
       setCategories(updated);
-      setSurveys(prev => prev.map(s =>
-        s.categoria === category.nombre ? { ...s, categoria: 'General' } : s
+      // Actualizar encuestas que tenían esa categoría
+      setSurveys(prev => prev.map(s => 
+        s.categoria === category.name ? { ...s, categoria: 'General' } : s
       ));
     } catch (err) {
       console.error(err);
@@ -74,7 +86,7 @@ function Admin_Home() {
   });
 
   const handleSortAZ = () => {
-    setSortedSurveys([...surveys].sort((a, b) => a.nombre.localeCompare(b.nombre)));
+    setSortedSurveys([...surveys].sort((a, b) => (a.nombre || a.name).localeCompare(b.nombre || b.name)));
     setFilter('');
     setCategoryFilter(null);
   };
@@ -85,14 +97,10 @@ function Admin_Home() {
     setCategoryFilter(null);
   };
 
-
-  
-
   const handleSelectSurvey = (s) => {
     setSelectedSurvey(s);
   };
 
-  // FUNCIÓN PARA ELIMINAR ENCUESTA
   const deleteSurvey = async () => {
     if (!selectedSurvey) return;
     try {
@@ -106,7 +114,7 @@ function Admin_Home() {
   };
 
   const handleDeleteClick = (s) => {
-    setDelMessage(`¿Eliminar encuesta "${s.nombre}"?`);
+    setDelMessage(`¿Eliminar encuesta "${s.nombre || s.name}"?`);
     setSelectedSurvey(s);
     setShowDel(true);
   };
@@ -114,13 +122,11 @@ function Admin_Home() {
   const handleToggleState = async (survey, newActive) => {
     const id = survey._id || survey.id;
     const nuevoEstado = newActive ? 'activa' : 'inactiva';
-    // Optimista: actualizar UI
-    setSurveys(prev => prev.map(s => ( (s._id || s.id) === id ? { ...s, estado: nuevoEstado, state: nuevoEstado } : s )));
+    setSurveys(prev => prev.map(s => ((s._id || s.id) === id ? { ...s, estado: nuevoEstado, state: nuevoEstado } : s)));
     try {
       await actualizarEncuesta(id, { ...survey, estado: nuevoEstado, state: nuevoEstado });
     } catch (err) {
-      // Revertir si falla
-      setSurveys(prev => prev.map(s => ( (s._id || s.id) === id ? { ...s, estado: survey.estado, state: survey.state } : s )));
+      setSurveys(prev => prev.map(s => ((s._id || s.id) === id ? { ...s, estado: survey.estado, state: survey.state } : s)));
       alert('Error al actualizar estado');
     }
   };
@@ -170,6 +176,8 @@ function Admin_Home() {
 }
 
 export default Admin_Home;
+
+
 
 
 
