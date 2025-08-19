@@ -30,7 +30,9 @@ const Login = ({ setUsuarioLogueado }) => {
     }
     // Usuarios comunes
     const users = JSON.parse(localStorage.getItem("usuarios")) || [];
-    const user = users.find((u) => u.email === email && u.password === password);
+    const user = users.find(
+      (u) => u.email === email && u.password === password
+    );
     if (user) {
       setUsuarioLogueado(user);
       sessionStorage.setItem("userKey", JSON.stringify(user));
@@ -110,6 +112,11 @@ const Login = ({ setUsuarioLogueado }) => {
               <Button type="submit" variant="primary" className="login-button">
                 Iniciar Sesión
               </Button>
+              <div className="text-center mt-3">
+                <Link to="/recuperar" className="forgot-password-link">
+                  ¿Olvidaste tu contraseña?
+                </Link>
+              </div>
             </div>
           </Form>
         </Card.Body>
