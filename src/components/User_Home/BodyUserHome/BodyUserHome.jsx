@@ -2,40 +2,51 @@ import { Button, ButtonGroup, Dropdown, InputGroup, Form, Row, Col } from 'react
 import './BodyUserHome.css';
 import { useEffect, useState } from 'react';
 import GridCard from '../GridCard/GridCard';
-import {useCategories} from '../../../context/EncuestasContext'
 import { obtenerEncuestas } from '../../../api/apiAdministrador/Encuestas';
+import { getCategories } from '../../../api/apiAdministrador/Category';
 
 function BodyUserHome() {
-    const { categories } = useCategories();
+    const [categories, setCategories] = useState([]);
     const [surveys, setSurveys] = useState([]);
     const [allSurveys, setAllSurveys] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState('Todas');
+    const [searchText, setSearchText] = useState('');
 
     useEffect(() => {
-        const fetchSurveys = async () => {
+        const fetchData = async () => {
             try {
                 const data = await obtenerEncuestas();
-                setSurveys(data);
-                setAllSurveys(data);
+                // Solo encuestas activas
+                const activas = data.filter(s => (s.state || s.estado) === 'activa');
+                setSurveys(activas);
+                setAllSurveys(activas);
+                const cats = await getCategories();
+                setCategories(cats);
             } catch (error) {
                 setSurveys([]);
                 setAllSurveys([]);
+                setCategories([]);
             }
         };
-        fetchSurveys();
+        fetchData();
     }, []);
 
     function handleSeleccion(cat) {
-        if (cat === 'Todas') {
-            setSurveys(allSurveys);
-        } else {
-            const filtered = allSurveys.filter((item) => {
+        setSelectedCategory(cat);
+        let filtered = allSurveys;
+        if (cat !== 'Todas') {
+            filtered = filtered.filter((item) => {
                 if (typeof item.category === 'object' && item.category !== null) {
-                    return item.category.nombre === cat;
+                    return item.category.name === cat;
                 }
                 return (item.categoria || item.category) === cat;
             });
-            setSurveys(filtered);
         }
+        // Aplicar búsqueda si hay texto
+        if (searchText.trim() !== '') {
+            filtered = filtered.filter(s => getFirstCardTitle(s).toLowerCase().includes(searchText.toLowerCase()));
+        }
+        setSurveys(filtered);
     }
 
     function handleSeleccionOrder(orderBy) {
@@ -48,6 +59,23 @@ function BodyUserHome() {
             sorted.sort((a, b) => new Date(b.createdAt || b.date) - new Date(a.createdAt || a.date));
         }
         setSurveys(sorted);
+    }
+
+    function handleSearch(e) {
+        setSearchText(e.target.value);
+        let filtered = allSurveys;
+        if (selectedCategory !== 'Todas') {
+            filtered = filtered.filter((item) => {
+                if (typeof item.category === 'object' && item.category !== null) {
+                    return item.category.name === selectedCategory;
+                }
+                return (item.categoria || item.category) === selectedCategory;
+            });
+        }
+        if (e.target.value.trim() !== '') {
+            filtered = filtered.filter(s => getFirstCardTitle(s).toLowerCase().includes(e.target.value.toLowerCase()));
+        }
+        setSurveys(filtered);
     }
 
     // Helpers para extraer datos de la primera card tipo "text"
@@ -70,7 +98,8 @@ function BodyUserHome() {
         description: getFirstCardDescription(s),
         image: getImage(s),
         category:
-            (typeof s.categoria === 'object' && s.categoria !== null && s.categoria.nombre) ||
+            (typeof s.categoria === 'object' && s.categoria !== null && s.categoria.name) ||
+            (typeof s.category === 'object' && s.category !== null && s.category.name) ||
             s.category ||
             '',
         cards: s.cards 
@@ -88,8 +117,10 @@ function BodyUserHome() {
                             aria-label="Example text with button addon"
                             aria-describedby="basic-addon1"
                             placeholder="Buscar encuesta"
+                            value={searchText}
+                            onChange={handleSearch}
                         />
-                        <Button className='btn-buscar' id="button-addon1">
+                        <Button className='btn-buscar' id="button-addon1" onClick={() => handleSearch({target: {value: searchText}})}>
                             Buscar
                         </Button>
                     </InputGroup>
@@ -100,9 +131,9 @@ function BodyUserHome() {
                             <Button variant='secondary'>Ordenar por:</Button>
                             <Dropdown.Toggle split variant='secondary' id="dropdown-split-basic" />
                             <Dropdown.Menu>
-                                <Dropdown.Item href="#/action-1" onClick={() => handleSeleccionOrder('A-Z')}>A-Z</Dropdown.Item>
-                                <Dropdown.Item href="#/action-2" onClick={() => handleSeleccionOrder('Z-A')}>Z-A</Dropdown.Item>
-                                <Dropdown.Item href="#/action-3" onClick={() => handleSeleccionOrder('Los mas nuevos')}>Los más nuevos</Dropdown.Item>
+                                <Dropdown.Item onClick={() => handleSeleccionOrder('A-Z')}>A-Z</Dropdown.Item>
+                                <Dropdown.Item onClick={() => handleSeleccionOrder('Z-A')}>Z-A</Dropdown.Item>
+                                <Dropdown.Item onClick={() => handleSeleccionOrder('Los mas nuevos')}>Los más nuevos</Dropdown.Item>
                             </Dropdown.Menu>
                         </Dropdown>
                     </div>
@@ -112,13 +143,12 @@ function BodyUserHome() {
                                 Categorías
                             </Dropdown.Toggle>
                             <Dropdown.Menu>
-                                <Dropdown.Item href={`#/`} onClick={() => handleSeleccion('Todas')}>Todas</Dropdown.Item>
+                                <Dropdown.Item onClick={() => handleSeleccion('Todas')}>Todas</Dropdown.Item>
                                 {categories.map((cat) => (
                                     <Dropdown.Item
-                                        key={cat.id}
-                                        href={`#/categorias/${cat.nombre}`}
-                                        onClick={() => handleSeleccion(cat.nombre)}>
-                                        {cat.nombre}
+                                        key={cat._id}
+                                        onClick={() => handleSeleccion(cat.name)}>
+                                        {cat.name}
                                     </Dropdown.Item>
                                 ))}
                             </Dropdown.Menu>

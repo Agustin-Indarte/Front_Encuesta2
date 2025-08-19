@@ -1,14 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
 import { Navbar, AdmGridCards } from '../../components';
 import { Row, Form, Col, Button } from 'react-bootstrap';
-import { useCategories } from '../../context/EncuestasContext'
+import { getCategories } from '../../api/apiAdministrador/Category';
 import './Admin_Encuestas.css'
 
 import { crearEncuesta } from '../../api'; // importa la función
 
 function Admin_Encuestas() {
-  const { categories } = useCategories();
   const initialized = useRef(false);
+  const [categories, setCategories] = useState([]);
   const [encuestaData, setEncuestaData] = useState({
     nombre: '',
     estado: '',
@@ -17,6 +17,10 @@ function Admin_Encuestas() {
     cards: []
   });
   const [activeCardId, setActiveCardId] = useState(null);
+
+  useEffect(() => {
+    getCategories().then(setCategories).catch(() => setCategories([]));
+  }, []);
 
   useEffect(() => {
     if (!initialized.current && encuestaData.cards.length === 0) {
@@ -94,8 +98,8 @@ function Admin_Encuestas() {
   }
 
   // Buscar el nombre de la categoría por id
-  const categoriaObj = categories.find(cat => String(cat.id) === String(encuestaData.categoria));
-  const categoriaNombre = categoriaObj ? categoriaObj.nombre : '';
+  const categoriaObj = categories.find(cat => String(cat._id) === String(encuestaData.categoria));
+  const categoriaNombre = categoriaObj ? categoriaObj.name : '';
 
   // 1. Filtrar cards no definidas y limpiar el contenido
   const cardsFiltradas = encuestaData.cards
@@ -217,8 +221,8 @@ function Admin_Encuestas() {
             >
               <option value="">Seleccionar Categoría</option>
               {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.nombre}
+                <option key={category._id} value={category._id}>
+                  {category.name}
                 </option>
               ))}
             </Form.Select>
