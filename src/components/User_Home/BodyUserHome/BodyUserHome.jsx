@@ -9,7 +9,7 @@ function BodyUserHome() {
     const { categories } = useCategories();
     const [surveys, setSurveys] = useState([]);
 
-  
+   /* para commit de prueba */
    // Cargar encuestas desde localStorage al montar
     useEffect(() => {
         loadSurveys();
