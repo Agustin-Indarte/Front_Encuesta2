@@ -1,0 +1,45 @@
+.SideBar-Container {
+    width: 100%; /* Ocupa todo el ancho de la columna */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-radius: 0.25rem 0 0 0.25rem; /* Bordes redondeados solo a la izquierda */
+}
+
+.btn-SideBar {
+  background-color: var(--colorAzulOscuro);
+  border: 1px solid white;
+  padding: 11px 0;
+  transition: background-color 0.2s ease;
+}
+
+.btn-SideBar:hover {
+  background-color: var(--colorAzul); 
+}
+
+.btn-SideBarDelete {
+  background-color: var(--colorAzulOscuro);
+  border: 1px solid white;
+  padding: 11px 0;
+  transition: background-color 0.2s ease;
+}
+
+.btn-SideBarDelete:hover {
+  background-color: red; 
+}
+
+/* Estilo especial para la primera card */
+.btn-SideBarDelete.first-card-disabled {
+  background-color: grey; /* Amarillo claro de advertencia */
+  cursor: not-allowed;
+}
+
+.icon-SideBar {
+  font-size: 1.5rem;
+  color: white;
+}
+
+.active-btnSideBar {
+  background-color: var(--colorAzul);
+  color: white;
+}

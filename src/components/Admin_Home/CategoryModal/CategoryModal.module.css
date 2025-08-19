@@ -1,0 +1,80 @@
+.modalWidth {
+  max-width: 40%;
+}
+
+.modalBody {
+  padding: 25px;
+}
+
+.emptyMessage {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6c757d;
+  border: 1px dashed #dee2e6;
+  border-radius: 5px;
+}
+
+.emptyMessage p {
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+}
+
+.emptyMessage small {
+  font-size: 0.9rem;
+  color: #adb5bd;
+}
+
+.tableWrapper {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #dee2e6;
+  border-radius: 5px;
+}
+
+.categoryTable {
+  margin-bottom: 0;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.categoryTable thead {
+  position: sticky;
+  top: 0;
+  background-color: var(--colorAzulOscuro);
+  z-index: 10;
+}
+
+.categoryTable th {
+  background-color: var(--colorAzul);
+  color: whitesmoke;
+  position: sticky;
+  top: 0;
+  padding: 12px 8px;
+}
+
+.categoryTable td {
+  padding: 8px;
+  vertical-align: middle;
+  word-wrap: break-word;
+}
+
+/* Columnas con anchos específicos */
+
+.deleteBtn {
+  min-width: 80px;
+}
+
+/* En tu archivo CategoryModal.module.css */
+.formControl {
+  border-radius: 0.25rem 0 0 0.25rem !important;
+  border-right: none;
+}
+
+.saveButton {
+  border-radius: 0 0.25rem 0.25rem 0 !important;
+  white-space: nowrap;
+}
+
+.input-group {
+  box-shadow: 0 0 5px rgba(0,0,0,0.1);
+}

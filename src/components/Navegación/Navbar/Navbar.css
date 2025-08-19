@@ -1,0 +1,21 @@
+.custom-Navbar {
+  background-color: var(--colorAzulOscuro);
+  border-bottom: 2px solid var(--colorAzul);
+}
+
+.navbar-brand img {
+  height: 50px;
+  width: auto;
+}
+
+.Navbar-Perfil img {
+  height:55px;
+  width: auto;
+}
+
+
+
+
+
+
+

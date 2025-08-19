@@ -1,0 +1,5 @@
+.title-page{
+    font-size: clamp(1rem 4vw 3rem);
+    color: var(--colorAzul);
+    font-weight: bolder;
+}

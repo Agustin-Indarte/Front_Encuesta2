@@ -1,0 +1,23 @@
+.ContainerGridEncuestas {
+  height: 500px; /* Ajustalo a tu necesidad */
+  overflow-y: auto;
+ 
+}
+
+.img-full-height {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-top-left-radius: 0.5rem;   /* igual que .rounded-start */
+  border-bottom-left-radius: 0.5rem;
+  border-top-right-radius: 0;       /* esquina derecha recta */
+  border-bottom-right-radius: 0;
+}
+
+.btn-reply{
+  background-color: var(--colorAzul);
+}
+
+.card-title{
+  color: var(--colorAzul);
+}
