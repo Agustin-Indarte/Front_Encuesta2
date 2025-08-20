@@ -1,4 +1,4 @@
-const API = "http://localhost:4000/api/v1";
+const API = "https://back-encuesta2.onrender.com/api/v1";
 const getToken = () => localStorage.getItem("token"); //funcion para buscar el token de local storage
 import axios from "axios"; // axios remplaza el fetch que es para hacer peticiones HTTP (GET,POST,PUT,DELETE, etc.). (axios y fetch hacen lo mismo pero axios es mas simple)
 

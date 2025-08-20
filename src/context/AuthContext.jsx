@@ -26,7 +26,7 @@ const logout = async () => {
     localStorage.removeItem("token");
     setUser(null);
     setProfileImage(null);
-    await fetch("http://localhost:4000/api/v1/logout", {
+    await fetch("https://back-encuesta2.onrender.com/api/v1/logout", {
         method: "POST",
         headers: {
             Authorization: `Bearer ${getToken()}`
@@ -48,7 +48,7 @@ const getProfile = async () => {
 
     //si hay una imagen, armar la URL para mostrarla en el navegador
     if(data.profileImage){
-        setProfileImage(`http://localhost:4000${data.profileImage}`)
+        setProfileImage(`https://back-encuesta2.onrender.com${data.profileImage}`)
     }
 }
 

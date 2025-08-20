@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import "./Login.css";
 
-const API = "http://localhost:4000/api/v1"
+const API = "https://back-encuesta2.onrender.com/api/v1"
 
 function Resetear() {
     const [params] = useSearchParams();

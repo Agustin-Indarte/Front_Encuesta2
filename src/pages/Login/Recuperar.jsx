@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-const API = "http://localhost:4000/api/v1"
+const API = "https://back-encuesta2.onrender.com/api/v1"
 
 function Recuperar() {
 
