@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import { SideBar, AdmCard } from '../../../components/index'
-import './admGridCard.css'
+import './AdmGridCard.css'
 
 const AdmGridCards = ({ 
   cards, 
