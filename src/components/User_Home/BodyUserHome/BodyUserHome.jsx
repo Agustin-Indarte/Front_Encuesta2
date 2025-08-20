@@ -83,7 +83,7 @@ function BodyUserHome() {
         return survey.cards?.find(card => card.type === 'text') || {};
     }
     function getFirstCardTitle(survey) {
-        return getFirstCard(survey).content?.title || survey.name || '';
+        return getFirstCard(survey).content?.name || survey.name || '';
     }
     function getFirstCardDescription(survey) {
         return getFirstCard(survey).content?.description || '';
@@ -102,7 +102,8 @@ function BodyUserHome() {
             (typeof s.category === 'object' && s.category !== null && s.category.name) ||
             s.category ||
             '',
-        cards: s.cards 
+        cards: s.cards,
+        createdAt: s.createdAt // <-- asegúrate de pasar createdAt
     }));
 
     return (
@@ -161,4 +162,4 @@ function BodyUserHome() {
     )
 }
 
-export default BodyUserHome
+export default BodyUserHome;

@@ -4,7 +4,6 @@ import App from './App.jsx';
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from './context/AuthContext.jsx';
 import { Toaster } from 'react-hot-toast';
-import { TaskProvider } from './components/Register/context/TaskContext.jsx'
 import { EncuestasProvider } from './context/EncuestasContext';
 
 createRoot(document.getElementById('root')).render(
@@ -12,7 +11,6 @@ createRoot(document.getElementById('root')).render(
   <BrowserRouter>
 
     <AuthProvider>
-      <TaskProvider>
         <EncuestasProvider>
           <App />
         </EncuestasProvider>
@@ -33,7 +31,6 @@ createRoot(document.getElementById('root')).render(
             },
           }}
         />
-      </TaskProvider>
     </AuthProvider>
   </BrowserRouter>
 )

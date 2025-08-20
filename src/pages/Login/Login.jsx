@@ -25,7 +25,7 @@ const Login = () => {
         navigate("/admin/home");
       }else{
           await login(form);
-          navigate("/")
+          navigate("/user/home")
       }
     } catch (err) {    
       const messages = err.response?.data?.err;

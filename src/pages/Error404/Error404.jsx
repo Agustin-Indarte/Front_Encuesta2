@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./Error404.css";
-import errorImg from "../../../public/img/error1.png";
 
 const Error404 = () => {
   const navigate = useNavigate();
@@ -11,7 +10,7 @@ const Error404 = () => {
       <h1 className="error-title">
         ¡Oops! Parece que esta respuesta no existe... Error
       </h1>
-      <img src={errorImg} alt="Error 404 - Encuesta2" className="error-image" />
+      <img src="/img/error1.png" alt="Error 404 - Encuesta2" className="error-image" />
       <p className="error-text">
         Lo sentimos, la página que buscas no está disponible.  
         Pero tranquilo, aún tienes mucho para responder en{" "}

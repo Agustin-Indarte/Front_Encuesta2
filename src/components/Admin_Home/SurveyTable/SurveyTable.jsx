@@ -52,8 +52,8 @@ function SurveyTable({ data = [], onSelect, onDelete, onToggleState }) {
                     />
                   </td>
                   <td className='text-center'>
-                    <Button
-                      variant="info"
+                    <Button className='w-75'
+                      variant="secondary"
                       size="sm"
                       onClick={e => {
                         e.stopPropagation();
@@ -64,7 +64,7 @@ function SurveyTable({ data = [], onSelect, onDelete, onToggleState }) {
                     </Button>
                   </td>
                   <td className='text-center'>
-                    <Button
+                    <Button className='w-75'
                       variant="danger"
                       size="sm"
                       onClick={e => {
