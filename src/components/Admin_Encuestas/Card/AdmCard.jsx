@@ -1,6 +1,6 @@
 import React from 'react'
 import { Card } from 'react-bootstrap';
-import './admCard.css'
+import './AdmCard.css'
 import { TypeText, TypeQuestion, TypeMultimedia } from '../../../components'
 
 const AdmCard = ({ card, isActive, onUpdateContent }) => {
