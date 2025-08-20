@@ -1,7 +1,7 @@
 // src/components/Admin_Home/AdmFooter/AdmFooter.jsx
-import React, { useState } from 'react'; 
+import React, { useState } from 'react';
 import { Button, Dropdown, Row, Col } from 'react-bootstrap';
-import { FaSortAlphaDown, FaClock, FaSearch } from 'react-icons/fa';
+import { FaSortAlphaDown, FaClock, FaSearch, FaBroom } from 'react-icons/fa';
 import "./AdmHomeFooter.css";
 
 function AdmFooter({
@@ -43,27 +43,44 @@ function AdmFooter({
   return (
     <Row className="w-100 mt-4">
       {/* Buscar encuesta */}
-      <Col md={4}>
-        {isSearching ? (
-          <input
-            className="AdmHome-inputBuscar"
-            type="text"
-            value={searchText}
-            onChange={handleInputChange}
-            onKeyDown={handleInputKeyDown}
-            onBlur={handleInputBlur}
-            placeholder="Buscar encuesta..."
-            autoFocus
-          />
-        ) : (
-          <Button 
-            className="w-100 fs-4 fw-bold bg-black border" 
-            onClick={handleBuscarClick}
-          >
-            BUSCAR
-            <FaSearch className='ms-3' size={20} />
-          </Button>
-        )}
+ <Col md={4} className="d-flex gap-2">
+<Button
+          className="fs-4 fw-bold bg-secondary border flex-shrink-0"
+          style={{ width: '60px' }}
+          title="Limpiar filtros"
+          onClick={() => {
+            setSearchText('');
+            setIsSearching(false);
+            onSearch('');
+            onCategorySelect(null);
+          }}
+        >
+          <FaBroom size={22} />
+        </Button>
+        <div className="flex-grow-1">
+          {isSearching ? (
+            <input
+              className="AdmHome-inputBuscar w-100"
+              type="text"
+              value={searchText}
+              onChange={handleInputChange}
+              onKeyDown={handleInputKeyDown}
+              onBlur={handleInputBlur}
+              placeholder="Buscar encuesta..."
+              autoFocus
+            />
+          ) : (
+            <Button
+              className="w-100 fs-4 fw-bold bg-black border d-flex justify-content-center align-items-center"
+              onClick={handleBuscarClick}
+            >
+              BUSCAR
+              <FaSearch className='ms-3' size={22} />
+            </Button>
+          )}
+
+        </div>
+        
       </Col>
 
       {/* Filtrar por categoría */}
@@ -80,8 +97,8 @@ function AdmFooter({
               Todas
             </Dropdown.Item>
             {categories.map(cat => (
-              <Dropdown.Item 
-                key={cat._id} 
+              <Dropdown.Item
+                key={cat._id}
                 onClick={() => {
                   onCategorySelect(cat.name);
                   onSearch(''); // Limpiar búsqueda al cambiar categoría
@@ -118,6 +135,8 @@ function AdmFooter({
           </Dropdown.Menu>
         </Dropdown>
       </Col>
+
+     
     </Row>
   );
 }

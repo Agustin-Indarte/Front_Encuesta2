@@ -14,8 +14,8 @@ function SurveyTable({ data = [], onSelect, onDelete, onToggleState }) {
             <th>FECHA</th>
             <th>CATEGORÍA</th>
             <th>ENCUESTA</th>
-            <th>ESTADO</th>
-            <th>ACCIONES</th>
+            <th className='text-center'>ESTADO</th>
+            <th className='text-center'>ACCIONES</th>
           </tr>
         </thead>
         <tbody>
@@ -41,13 +41,13 @@ function SurveyTable({ data = [], onSelect, onDelete, onToggleState }) {
                   <td>{fecha}</td>
                   <td>{categoria}</td>
                   <td>{nombre}</td>
-                  <td>
+                  <td className='text-center'>
                     <Switch
                       checked={active}
                       onChange={() => onToggleState && onToggleState(s, !active)}
                     />
                   </td>
-                  <td>
+                  <td className='text-center'>
                     <Button
                       variant="danger"
                       size="sm"

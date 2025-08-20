@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Button, Form, Table } from 'react-bootstrap';
+import { Modal, Button, Form, Table, Row, Col } from 'react-bootstrap';
 
 function CategoryModal({ show, onHide, categories, onSave, onDelete }) {
   const [categoryName, setCategoryName] = useState('');
@@ -18,34 +18,43 @@ function CategoryModal({ show, onHide, categories, onSave, onDelete }) {
   };
 
   return (
-    <Modal show={show} onHide={onHide}>
+    <Modal show={show} onHide={onHide} centered>
       <Modal.Header closeButton>
-        <Modal.Title>Categorías</Modal.Title>
+        <Modal.Title>Administrar Categorías</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
-          <Form.Group className="mb-3">
-            <Form.Label>Nueva categoría</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Ingrese nombre"
-              value={categoryName}
-              onChange={(e) => setCategoryName(e.target.value)}
-              onKeyDown={handleKeyDown}
-              autoFocus
-            />
-          </Form.Group>
-          <Button variant="primary" onClick={handleSave}>
-            Agregar
-          </Button>
+          <Row>
+            <Col md={9}>
+              <Form.Group className="mb-3">
+                
+                <Form.Control
+                  type="text"
+                  placeholder="Ingresa el nombre de la categoría"
+                  value={categoryName}
+                  onChange={(e) => setCategoryName(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  autoFocus
+                />
+              </Form.Group>
+            </Col>
+
+            <Col md={3}>
+              <Button variant="primary" onClick={handleSave}>
+                Agregar
+              </Button>
+            </Col>
+          </Row>
+
+
         </Form>
 
-        <Table striped bordered hover responsive className="mt-3">
+        <Table striped bordered hover responsive className="mt-1">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Acciones</th>
+              <th className='bg-primary text-white'>ID</th>
+              <th  className='bg-primary text-white'>Nombre</th>
+              <th  className='bg-primary text-white'>Acciones</th>
             </tr>
           </thead>
           <tbody>
@@ -67,11 +76,7 @@ function CategoryModal({ show, onHide, categories, onSave, onDelete }) {
           </tbody>
         </Table>
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={onHide}>
-          Cerrar
-        </Button>
-      </Modal.Footer>
+
     </Modal>
   );
 }
