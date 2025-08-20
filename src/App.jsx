@@ -3,7 +3,7 @@ import './App.css';
 import './index.css'
 import { Routes, Route } from "react-router-dom";
 import { useState } from "react";
-import { Inicio, Login, Register, Admin_Encuestas, Admin_Home, User_Encuestas, User_Home, Error404 } from "./pages"
+import { Inicio, Login, Register, Admin_Encuestas, Admin_Home, User_Encuestas, User_Home, Error404,AdminRespuestas } from "./pages"
 
 
 function App() {
@@ -19,6 +19,8 @@ function App() {
           <Route path="/admin/home" element={<Admin_Home />} />
           <Route path="/user/encuestas" element={<User_Encuestas />} />
           <Route path="/user/home" element={<User_Home />} />
+
+          <Route path="/admin-respuestas" element={<AdminRespuestas />} />
           <Route path="*" element={<Error404 />} />
         </Routes>
    

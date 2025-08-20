@@ -6,3 +6,5 @@ export {default as User_Home} from './User_Home/User_Home';
 export {default as Admin_Encuestas} from './Admin_Encuestas/Admin_Encuestas';
 export {default as Admin_Home} from './Admin_Home/Admin_Home';
 export {default as Error404} from './Error404/Error404'
+export {default as AdminRespuestas} from './VerRespuestas/AdminRespuestas' 
+export {default as UserRespuestas} from './VerRespuestas/UserRespuestas' 

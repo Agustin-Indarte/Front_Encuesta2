@@ -8,3 +8,8 @@ export const guardarRespuesta = async (data) => {
     throw error;
   }
 };
+
+export const obtenerRespuestasPorEncuesta = async (idEncuesta) => {
+  const res = await api.get(`/respuestas/encuesta/${idEncuesta}`);
+  return res.data;
+};

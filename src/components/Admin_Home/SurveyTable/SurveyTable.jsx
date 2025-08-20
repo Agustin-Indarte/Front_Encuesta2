@@ -1,10 +1,13 @@
 // src/components/Admin_Home/SurveyTable/SurveyTable.jsx
-import React from 'react'; 
+import React from 'react';
 import { Table, Button } from 'react-bootstrap';
 import styles from './SurveyTable.module.css';
 import Switch from '../../Switch/Switch';
+import { useNavigate } from 'react-router-dom';
 
 function SurveyTable({ data = [], onSelect, onDelete, onToggleState }) {
+
+  const navigate = useNavigate();
   return (
     <div className={styles.tableContainer}>
       <Table striped bordered hover responsive className="mb-0">
@@ -15,6 +18,7 @@ function SurveyTable({ data = [], onSelect, onDelete, onToggleState }) {
             <th>CATEGORÍA</th>
             <th>ENCUESTA</th>
             <th className='text-center'>ESTADO</th>
+            <th className='text-center'>RESPUESTAS</th>
             <th className='text-center'>ACCIONES</th>
           </tr>
         </thead>
@@ -46,6 +50,18 @@ function SurveyTable({ data = [], onSelect, onDelete, onToggleState }) {
                       checked={active}
                       onChange={() => onToggleState && onToggleState(s, !active)}
                     />
+                  </td>
+                  <td className='text-center'>
+                    <Button
+                      variant="info"
+                      size="sm"
+                      onClick={e => {
+                        e.stopPropagation();
+                        navigate('/admin-respuestas', { state: { encuesta: s } });
+                      }}
+                    >
+                      Ver
+                    </Button>
                   </td>
                   <td className='text-center'>
                     <Button
