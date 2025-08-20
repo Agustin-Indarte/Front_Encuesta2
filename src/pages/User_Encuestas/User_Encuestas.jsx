@@ -1,12 +1,38 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Col, Row, Button } from 'react-bootstrap';
 import { useLocation } from 'react-router-dom';
 import {Navbar, UserGridCards} from '../../components';
+import { guardarRespuesta } from '../../api';
 
 function User_Encuestas() {
   const location = useLocation();
   const encuesta = location.state?.encuesta;
-console.log('Encuesta:', encuesta);
+  const [respuestas, setRespuestas] = useState([]);
+
+  // Usa un ObjectId de usuario real (ajusta este valor por uno válido de tu base de datos)
+  const usuarioId = '665f2c7b8e8b2c0012a1b2c4';
+
+  // Cambia para usar el _id real de la card
+  const handleRespuesta = (cardId, valor) => {
+    setRespuestas(prev => {
+      const filtradas = prev.filter(r => r.cardId !== cardId);
+      return [...filtradas, { cardId, valor }];
+    });
+  };
+
+  const handleEnviar = async () => {
+    try {
+      await guardarRespuesta({
+        encuesta: encuesta._id || encuesta.id,
+        usuario: usuarioId,
+        respuestas
+      });
+      alert('Respuestas enviadas correctamente');
+    } catch (e) {
+      alert('Error al enviar respuestas');
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -26,10 +52,11 @@ console.log('Encuesta:', encuesta);
             
           </Col>
           <Col md={6}>
-          <UserGridCards cards={encuesta?.cards || []} />
+          {/* Pasa el _id real de cada card */}
+          <UserGridCards cards={encuesta?.cards || []} onRespuesta={handleRespuesta} />
           </Col>
           <Col md={3}>
-            <Button className='w-100 fs-4 fw-bold'>
+            <Button className='w-100 fs-4 fw-bold' onClick={handleEnviar}>
               Responder
             </Button>
           </Col>

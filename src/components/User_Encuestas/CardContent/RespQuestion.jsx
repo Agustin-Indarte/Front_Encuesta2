@@ -1,19 +1,54 @@
 import React, { useState } from 'react';
-import { Form, Row, Col, ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
+import { Form, Row, Col } from 'react-bootstrap';
 
 
 
-function RespQuestion({ content }) {
-
+function RespQuestion({ content, onRespuesta }) {
   const [selectedValue, setSelectedValue] = useState(null);
 
   const handleChange = (value) => {
     setSelectedValue(value);
+    if (onRespuesta) onRespuesta(content.id, value); // content.id es el _id real
+  };
+
+  const handleSelectChange = (e) => {
+    setSelectedValue(e.target.value);
+    if (onRespuesta) onRespuesta(content.id, e.target.value);
+  };
+
+  const handleCheckboxChange = (option) => {
+    let newValue = Array.isArray(selectedValue) ? [...selectedValue] : [];
+    if (newValue.includes(option)) {
+      newValue = newValue.filter(v => v !== option);
+    } else {
+      newValue.push(option);
+    }
+    setSelectedValue(newValue);
+    if (onRespuesta) onRespuesta(content.id, newValue);
   };
 
   const renderResponseView = () => {
     switch (content.questionType) {
       case 'Choice':
+        return (
+          <div className="mt-1">
+            <Row>
+              {content.options
+                .filter(option => typeof option === 'string' && option.trim() !== '')
+                .map((option, index) => (
+                  <Col xs={12} sm={6} md={6} key={index} className='py-1'>
+                    <Form.Check
+                      type="radio"
+                      name={`q-${content.id}`}
+                      label={option}
+                      checked={selectedValue === option}
+                      onChange={() => handleChange(option)}
+                    />
+                  </Col>
+                ))}
+            </Row>
+          </div>
+        );
       case 'Verificación':
         return (
           <div className="mt-1">
@@ -23,20 +58,21 @@ function RespQuestion({ content }) {
                 .map((option, index) => (
                   <Col xs={12} sm={6} md={6} key={index} className='py-1'>
                     <Form.Check
-                      type={content.questionType === 'Verificación' ? 'checkbox' : 'radio'}
+                      type="checkbox"
                       name={`q-${content.id}`}
                       label={option}
+                      checked={Array.isArray(selectedValue) && selectedValue.includes(option)}
+                      onChange={() => handleCheckboxChange(option)}
                     />
                   </Col>
                 ))}
             </Row>
           </div>
         );
-
       case 'Desplegable':
         return (
           <div className="mt-1">
-            <Form.Select name={`q-${content.id}`} className='py-3 w-75'>
+            <Form.Select name={`q-${content.id}`} className='py-3 w-75' value={selectedValue || ''} onChange={handleSelectChange}>
               <option value="">Seleccione una opción</option>
               {content.options
                 .filter(option => typeof option === 'string' && option.trim() !== '')
@@ -48,7 +84,6 @@ function RespQuestion({ content }) {
             </Form.Select>
           </div>
         );
-
       case 'Escala':
         return (
           <div className="mt-2">
@@ -89,7 +124,6 @@ function RespQuestion({ content }) {
               </div>
               <span className="fw-bold">{content.labelMax || content.max}</span>
             </div>
-
             <style>
               {`
           .scale-radio input[type="radio"] {
@@ -99,7 +133,6 @@ function RespQuestion({ content }) {
             </style>
           </div>
         );
-
       case 'Archivos':
         return (
           <div className="mt-1">
@@ -113,14 +146,12 @@ function RespQuestion({ content }) {
             </small>
           </div>
         );
-
       case 'Fecha':
         return (
           <div className="mt-1">
-            <Form.Control type="date" className='py-3 fs-5' />
+            <Form.Control type="date" className='py-3 fs-5' value={selectedValue || ''} onChange={e => handleChange(e.target.value)} />
           </div>
         );
-
       case 'Pregunta':
         return (
           <div className="mt-1">
@@ -129,10 +160,11 @@ function RespQuestion({ content }) {
               rows={3}
               className="py-3 fs-5"
               placeholder="Escribe tu respuesta aquí"
+              value={selectedValue || ''}
+              onChange={e => handleChange(e.target.value)}
             />
           </div>
         );
-
       default:
         return null;
     }
