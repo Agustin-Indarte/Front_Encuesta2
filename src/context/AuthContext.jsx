@@ -17,7 +17,6 @@ const register = async (userData) =>{
 
 const login = async (credentials) => {
     const {token, user} = await authService.login(credentials);
-    console.log("Login OK - Token", token);
     localStorage.setItem("token", token)
     setUser(user);
     await getProfile(); // cargar la imagen y el perfil actualizado    

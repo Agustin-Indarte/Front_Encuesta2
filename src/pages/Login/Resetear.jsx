@@ -1,21 +1,29 @@
 import React, { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import "./Login.css";
 
+const API = "http://localhost:4000/api/v1"
 
 function Resetear() {
+    const [params] = useSearchParams();
+    const [error, setError] = useState(null);
+
   const [password, setPassword] = useState("");
   const [confirmar, setConfirmar] = useState("");
   const [mensaje, setMensaje] = useState("");
   const [tipoMensaje, setTipoMensaje] = useState("");
-  const { token } = useParams();
+ // const { token } = useParams();
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+   const token = params.get("token");
 
-    if (password.length < 8) {
-      setMensaje("La contraseña debe tener al menos 8 caracteres.");
+  const handleSubmit = async(e) => {
+    e.preventDefault();
+    setMensaje(null);
+    setError(null);
+
+    if (password.length < 6) {
+      setMensaje("La contraseña debe tener al menos 6 caracteres.");
       setTipoMensaje("error");
       return;
     }
@@ -25,15 +33,25 @@ function Resetear() {
       return;
     }
 
-    console.log("Token recibido:", token);
-    console.log("Nueva contraseña:", password);
+    const res = await fetch(`${API}/reset-password/${token}`, {
+      method: "POST", 
+      headers: {"Content-type" : "Application/json"},
+      body:JSON.stringify({newPassword:password})
+    })
 
-    setMensaje("¡Contraseña restablecida con éxito!");
-    setTipoMensaje("exito");
+    const data = await res.json();
 
-    setTimeout(() => {
-      navigate("/login");
-    }, 2000);
+    if(res.ok) {
+      setMensaje(data.message || "Contraseña Actualizada!!! ")
+      setTipoMensaje("exito");
+      setTimeout(() => {
+        navigate("/login")
+      }, 2000);
+    } else {
+      setError(data.message || "Error al actualizar la contraseña")
+    }
+
+
   };
 
   return (
@@ -49,7 +67,7 @@ function Resetear() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              minLength={8}
+              minLength={6}
               placeholder="Ingresa tu nueva contraseña"
             />
           </div>
@@ -61,23 +79,17 @@ function Resetear() {
               value={confirmar}
               onChange={(e) => setConfirmar(e.target.value)}
               required
-              minLength={8}
+              minLength={6}
               placeholder="Confirma tu nueva contraseña"
             />
           </div>
           <button type="submit" className="login-button">
             Guardar cambios
           </button>
+           {mensaje && <p className="text-green-600 mt-3">{mensaje}</p>}
+           {error && <p className="text-red-500 mt-3">{error}</p>}
         </form>
-        {mensaje && (
-          <p
-            className={`mt-3 ${
-              tipoMensaje === "error" ? "text-danger" : "text-success"
-            }`}
-          >
-            {mensaje}
-          </p>
-        )}
+       
       </div>
     </div>
   );

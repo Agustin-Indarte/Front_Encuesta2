@@ -1,0 +1,77 @@
+import axios from "axios";
+import { useEffect, useState } from "react";
+import {useSearchParams, useNavigate} from "react-router-dom";
+
+function VerifyEmail() {
+
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const [status, setStatus] = useState("Verificando...");
+  const token = searchParams.get("token");
+  const [verified, setVerified] = useState(false);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    
+      let isMounted = true; //cuando se montan los componenetes en la pagina
+
+      const verify = async () => {
+
+        if(!token){
+          setStatus("❌ No se proporcionó ningún token")
+          setError(true)
+          return
+        }
+
+        try {
+          const res = await axios.get(
+            `http://localhost:4000/api/v1/verify-email?token=${token}`
+          );
+
+          if(isMounted && res.data.success){
+            setStatus("✅ Email verificado con éxito! Ahora podes iniciar sesión")
+            setVerified(true)
+          }
+        } catch (error) {
+          if(isMounted){
+            setStatus("❌ El token es inválido o ya fue utilizado")
+            setError(true)
+          }
+          
+        }
+      }
+
+      verify();
+
+      return () => {
+        isMounted = false;
+      }
+  }, [token])
+
+  return (
+      <div className="text-center bg-primary p-5">
+      <div className="bg-white p-5 rounded shadow text-center  ">
+        <h2 className="my-4">Verificación de Email</h2>
+        <p>{status}</p>
+        {verified && (
+          <button
+            onClick={() => navigate("/login")}
+            className="mt-4 bg-primary text-white px-4 py-2 rounded"
+          >
+            Ir a Login
+          </button>
+        )}
+        {error && (
+          <button
+            onClick={() => navigate("/")}
+            className="mt-4 bg-primary text-white px-4 py-2 rounded"
+          >
+            Volver al inicio
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
+export default VerifyEmail

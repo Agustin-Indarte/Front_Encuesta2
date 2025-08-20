@@ -14,7 +14,7 @@ import {
   Error404,
   Recuperar,
   Resetear,
-  CorreoEnviado
+  VerifyEmail,
 } from "./pages";
 
 
@@ -25,17 +25,14 @@ function App() {
     <Routes>
       <Route path="/" element={<Inicio />} />
       <Route path="/register" element={<Register />} />
-      <Route
-        path="/login"
-        element={<Login setUsuarioLogueado={setUsuarioLogueado} />}
-      />
+      <Route path='/login' element={<Login/>}/>
       <Route path="/admin/encuestas" element={<Admin_Encuestas />} />
       <Route path="/admin/home" element={<Admin_Home />} />
       <Route path="/user/encuestas" element={<User_Encuestas />} />
       <Route path="/user/home" element={<User_Home />} />
       <Route path="/recuperar" element={<Recuperar/>} />
-      <Route path="/correo-enviado" element={<CorreoEnviado/>} />
-      <Route path="/resetear/:token" element={<Resetear/>} />
+      <Route path='/verify-email' element={<VerifyEmail/>}/>
+      <Route path="/reset-password" element={<Resetear/>} />
       <Route path="*" element={<Error404 />} />
     </Routes>
   );
