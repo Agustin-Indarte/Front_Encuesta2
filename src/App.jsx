@@ -4,7 +4,6 @@ import "./index.css";
 import { Routes, Route } from "react-router-dom";
 import { useState } from "react";
 import {
-  Inicio,
   Login,
   Register,
   Admin_Encuestas,
@@ -24,7 +23,7 @@ function App() {
   const [usuarioLogueado, setUsuarioLogueado] = useState(null);
   return (
     <Routes>
-      <Route path="/" element={<Inicio />} />
+      <Route path="/" element={<Register />} />
       <Route path="/register" element={<Register />} />
       <Route path='/login' element={<Login />} />
       <Route path="/admin/encuestas" element={<Admin_Encuestas />} />

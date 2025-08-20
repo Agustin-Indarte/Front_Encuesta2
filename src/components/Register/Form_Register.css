@@ -1,4 +1,3 @@
-
 .ContainerFormRegister {
   background-color: var(--colorAzulOscuro) ;
   height: 100vh;
@@ -34,4 +33,33 @@
 .btn-azul:active {
   transform: translateY(0);
   box-shadow: 0 3px 6px rgba(0, 99, 177, 0.4);
+}
+
+@media (max-width: 768px) {
+  .form {
+    width: 50% !important;
+    padding: 1.2rem !important;
+  }
+  .ContainerFormRegister {
+    padding: 0.5rem;
+  }
+  .form h2 {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .form {
+    width: 78% !important;
+    padding: 0.7rem !important;
+  }
+  .ContainerFormRegister {
+    padding: 0.2rem;
+  }
+  .form h2 {
+    font-size: 1rem;
+  }
+  .form input, .form button {
+    font-size: 0.95rem;
+  }
 }
