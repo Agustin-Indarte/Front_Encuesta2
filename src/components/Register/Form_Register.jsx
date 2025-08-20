@@ -6,7 +6,7 @@ import { Button } from "react-bootstrap";
 import { useAuth } from "../../context/AuthContext";
 
 function Form_Register() {
-  const [data, setData] = useState({username: "",email: "",password: ""});
+  const [data, setData] = useState({ username: "", email: "", password: "", confirmPassword: "" });
   const {register} = useAuth();
   const navigate = useNavigate();
 
@@ -47,28 +47,22 @@ function Form_Register() {
     if (!validateForm()) return;
 
     try {
-       await register(data)
-      toast.success("Registrado correctamente. Revisa tu email 📨");
-      navigate("/login")
-
-      // Limpiar formulario
-      setData({ 
-        username: "", 
-        email: "", 
-        password: "", 
-        confirmPassword: "" 
+      await register({
+        username: data.username,
+        email: data.email,
+        password: data.password
       });
-
+      toast.success("Registrado correctamente. Revisa tu email 📨");
+      setData({ username: "", email: "", password: "", confirmPassword: "" });
       navigate("/login");
     } catch (err) {
       const messages = err.response?.data?.error;
       console.log(err);
-      
-        if(Array.isArray(messages)){
-              messages.forEach((msg) => toast.error(msg))
-            } else {
-              toast.error(messages || "Error al registrarse")
-            }
+      if(Array.isArray(messages)){
+        messages.forEach((msg) => toast.error(msg))
+      } else {
+        toast.error(messages || "Error al registrarse")
+      }
     }
   }
 
