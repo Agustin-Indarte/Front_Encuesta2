@@ -11,7 +11,7 @@ const [loading, setLoading] = useState(true);
 
 const getToken = () => localStorage.getItem("token");
 
-const register = async (userData) =>{
+const register = async (userData) =>{ 
     return await authService.register(userData)
 }
 

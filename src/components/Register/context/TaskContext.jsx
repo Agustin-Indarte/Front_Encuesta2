@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import * as taskService from '../../../components/Register/services/taskService';
+import * as taskService from '../service/taskService';
 
 const TaskContext = createContext();
 
