@@ -3,17 +3,11 @@ import { useNavigate, Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import './Form_Register.css'
 import { Button } from "react-bootstrap";
+import { useAuth } from "../../context/AuthContext";
 
 function Form_Register() {
-  const [data, setData] = useState({ 
-    nombre: "", 
-    apellido: "", 
-    email: "", 
-    respuestaEmail: "", 
-    password: "", 
-    confirmPassword: "" 
-  });
-
+  const [data, setData] = useState({ username: "", email: "", password: "", confirmPassword: "" });
+  const {register} = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -21,9 +15,9 @@ function Form_Register() {
   }
 
   const validateForm = () => {
-    const { nombre, apellido, email, password, confirmPassword, respuestaEmail } = data;
+    const { username, email, password, confirmPassword } = data;
 
-    if (!nombre.trim() || !apellido.trim() || !email.trim() || !password || !confirmPassword || !respuestaEmail) {
+    if (!username.trim() || !email.trim() || !password || !confirmPassword) {
       toast.error("Todos los campos son obligatorios");
       return false;
     }
@@ -47,49 +41,28 @@ function Form_Register() {
     return true;
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validateForm()) return;
 
     try {
-      // Obtener usuarios del localStorage
-      const users = JSON.parse(localStorage.getItem('usuarios')) || [];
-      const exists = users.find(u => u.email === data.email);
-      if (exists) {
-        toast.error("Ya existe un usuario con ese email");
-        return;
-      }
-
-      const newUser = {
-        nombre: data.nombre,
-        apellido: data.apellido,
+      await register({
+        username: data.username,
         email: data.email,
-        password: data.password,
-        respuestaEmail: data.respuestaEmail,
-      };
-
-      users.push(newUser);
-      localStorage.setItem('usuarios', JSON.stringify(users));
-
-      toast.success("Registrado correctamente (guardado localmente)");
-
-      // Mostrar todos los usuarios en consola
-      console.log("Usuarios registrados:", users); /* BOORRAR DESPUES!!! MUCHO MUY IMPORTANTEEE */
-
-      // Limpiar formulario
-      setData({ 
-        nombre: "", 
-        apellido: "", 
-        email: "", 
-        respuestaEmail: "", 
-        password: "", 
-        confirmPassword: "" 
+        password: data.password
       });
-
+      toast.success("Registrado correctamente. Revisa tu email 📨");
+      setData({ username: "", email: "", password: "", confirmPassword: "" });
       navigate("/login");
     } catch (err) {
-      toast.error("Error al guardar el usuario");
+      const messages = err.response?.data?.error;
+      console.log(err);
+      if(Array.isArray(messages)){
+        messages.forEach((msg) => toast.error(msg))
+      } else {
+        toast.error(messages || "Error al registrarse")
+      }
     }
   }
 
@@ -107,24 +80,14 @@ function Form_Register() {
       <h2 className="fs-5 mb-4 text-start">Regístrate Gratis</h2>
 
       <div className="row g-2 mb-2">
-        <div className="col-12 col-md-6">
+        <div className="col-12">
           <input
             type="text"
-            name="nombre"
-            placeholder="Nombre"
+            name="username"
+            placeholder="Nombre de Usuario"
             className="form-control"
             onChange={handleChange}
-            value={data.nombre}
-          />
-        </div>
-        <div className="col-12 col-md-6">
-          <input
-            type="text"
-            name="apellido"
-            placeholder="Apellido"
-            className="form-control"
-            onChange={handleChange}
-            value={data.apellido}
+            value={data.username}
           />
         </div>
       </div>
@@ -160,34 +123,6 @@ function Form_Register() {
         onChange={handleChange}
         value={data.email}
       />
-
-      <div className="mt-2 mb-3 ">
-        <small>¿Quieres recibir notificaciones por email?</small>
-        <div className="d-flex flex-column flex-md-row gap-2 mt-1">
-          <label className="d-flex align-items-center">
-            <input 
-              type="radio" 
-              name="respuestaEmail" 
-              value="si" 
-              className="me-2" 
-              onChange={handleChange}
-              checked={data.respuestaEmail === "si"}
-            />
-            Sí, me gustaría
-          </label>
-          <label className="d-flex align-items-center">
-            <input 
-              type="radio" 
-              name="respuestaEmail" 
-              value="no" 
-              className="me-2" 
-              onChange={handleChange}
-              checked={data.respuestaEmail === "no"}
-            />
-            No, gracias
-          </label>
-        </div>
-      </div>
 
       <Button
         type="submit"

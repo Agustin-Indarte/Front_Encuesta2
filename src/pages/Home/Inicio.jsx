@@ -21,7 +21,7 @@ function Inicio() {
             <Button  className="custom-btn" variant="primary" onClick={() => navigate('/login')}>Login</Button>
           </Col>
           <Col>
-            <Button  className="custom-btn" variant="success" onClick={() => navigate('/registro')}>Register</Button>
+            <Button  className="custom-btn" variant="success" onClick={() => navigate('/register')}>Register</Button>
           </Col>
         </Row>
         <Row className="mb-3">

@@ -1,45 +1,45 @@
-import { Button, Card, Container, Form } from "react-bootstrap";
-import { useForm } from "react-hook-form";
+
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
+import { useAuth } from "../../context/AuthContext";
+import { useState } from "react";
+import {toast} from "react-hot-toast";
 
-const Login = ({ setUsuarioLogueado }) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm();
+const Login = () => {
+ 
+  const {login} = useAuth();
+  const navigate = useNavigate()
 
-  const navegacion = useNavigate();
+  const [form, setForm] = useState({email: "", password:""});
+  const [error, setError] = useState(null);
 
-  const onSubmit = (usuario) => {
-    // Normalizamos
-    const email = usuario.email?.trim().toLowerCase();
-    const password = usuario.password?.trim();
-    // Admin hardcodeado
-    if (email === "admin@gmail.com" && password === "12345678") {
-      setUsuarioLogueado({ email, nombre: "Administrador" });
-      sessionStorage.setItem(
-        "userKey",
-        JSON.stringify({ email, nombre: "Administrador" })
-      );
-      alert("Logueado correctamente");
-      navegacion("/admin/home");
-      return;
-    }
-    // Usuarios comunes
-    const users = JSON.parse(localStorage.getItem("usuarios")) || [];
-    const user = users.find((u) => u.email === email && u.password === password);
-    if (user) {
-      setUsuarioLogueado(user);
-      sessionStorage.setItem("userKey", JSON.stringify(user));
-      alert("Logueado correctamente");
-      navegacion("/user/home");
-    } else {
-      alert("Email o contraseña incorrecta");
+  const handleChange = (e) => {
+  setForm({...form, [e.target.name]: e.target.value})
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    try {
+        if (form.email === "admin@gmail.com" && form.password === "12345678") {
+        navigate("/admin/home");
+      }else{
+          await login(form);
+          navigate("/")
+      }
+    } catch (err) {    
+      const messages = err.response?.data?.err;
+      console.log(err);
+      if(Array.isArray(messages)){
+        messages.forEach((msg) => toast.error(msg))
+      } else {
+        toast.error(messages || "Error al iniciar sesión")
+      }
     }
   };
+
+
+
   return (
     <div className="ContainerFormRegister  d-flex flex-column align-items-center justify-content-center">
       <img
@@ -54,66 +54,57 @@ const Login = ({ setUsuarioLogueado }) => {
           Registrate
         </Link>
       </h4>
-      <Card className="login-card">
-        <Card.Body>
-          <Card.Title className="login-title">Iniciar Sesión</Card.Title>
-          <Form onSubmit={handleSubmit(onSubmit)}>
-            <Form.Group className="mb-4" controlId="formGroupEmail">
-              <Form.Label className="form-label">Email</Form.Label>
-              <Form.Control
+      
+      <div className="d-flex flex-column  justify-content-center align-items-center p-4">
+          <form onSubmit={handleSubmit} className="bg-white p-4 shadow rounded w-100" style={{ maxWidth: "400px" }}>
+            <h2 className="h5 fw-bold mb-4 text-center">Iniciar sesión</h2>
+
+            {error && <div className="alert alert-danger py-2">{error}</div>}
+
+            <div className="mb-3">
+              <input
                 type="email"
-                placeholder="Ejemplo@gmail.com"
-                className="form-input"
-                {...register("email", {
-                  required: "El mail es un dato obligatorio",
-                  minLength: {
-                    value: 11,
-                    message: "Debe ingresar como mínimo 11 caracteres",
-                  },
-                  maxLength: {
-                    value: 50,
-                    message: "Debe ingresar como máximo 50 caracteres",
-                  },
-                })}
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                placeholder="Email"
+                className="form-control"
+                required
               />
-              {errors.email && (
-                <Form.Text className="text-danger">
-                  {errors.email.message}
-                </Form.Text>
-              )}
-            </Form.Group>
-            <Form.Group className="mb-4" controlId="formGroupPassword">
-              <Form.Label className="form-label">Contraseña</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Ejemplo123"
-                className="form-input"
-                {...register("password", {
-                  required: "La contraseña es un campo obligatorio",
-                  minLength: {
-                    value: 8,
-                    message: "Debe ingresar como mínimo 8 caracteres",
-                  },
-                  maxLength: {
-                    value: 20,
-                    message: "Debe ingresar como máximo 20 caracteres",
-                  },
-                })}
-              />
-              {errors.password && (
-                <Form.Text className="text-danger">
-                  {errors.password.message}
-                </Form.Text>
-              )}
-            </Form.Group>{" "}
-            <div className="text-center">
-              <Button type="submit" variant="primary" className="login-button">
-                Iniciar Sesión
-              </Button>
             </div>
-          </Form>
-        </Card.Body>
-      </Card>
+
+            <div className="mb-3">
+              <input
+                type="password"
+                name="password"
+                value={form.password}
+                onChange={handleChange}
+                placeholder="Contraseña"
+                className="form-control"
+                required
+              />
+            </div>
+
+            <button type="submit" className="btn btn-primary w-100 mb-3">
+              Entrar
+            </button>
+
+            <div className="text-center small">
+              <p className="mb-2">
+                ¿No tienes una cuenta?{" "}
+                <Link to="/register" className="text-primary text-decoration-none">
+                  Regístrate
+                </Link>
+              </p>
+              <p>
+                <Link to="/recuperar" className="text-primary text-decoration-none">
+                  ¿Olvidaste tu contraseña?
+                </Link>
+              </p>
+            </div>
+          </form>
+        </div>
+
 
       <p className="text-center text-sm mb-0 mt-4">
         <Link to="/" className="text-blue-600 hover:underline fs-5">
