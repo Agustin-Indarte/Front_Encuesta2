@@ -1,5 +1,6 @@
 // src/pages/Admin_home/Admin_Home.jsx
 import React, { useState, useEffect } from 'react'; 
+import { toast } from 'react-hot-toast';
 import {
   AdminHeader,
   SurveyTable,
@@ -40,7 +41,7 @@ function Admin_Home() {
         const catsData = await getCategories();
         setCategories(catsData);
       } catch (error) {
-        console.error('Error cargando datos:', error);
+        toast.error(`Error cargando datos: ${error?.response?.data?.message || error?.message || ''}`);
         setSurveys([]);
         setCategories([]);
       }
@@ -56,7 +57,7 @@ function Admin_Home() {
       const updated = await getCategories();
       setCategories(updated);
     } catch (err) {
-      console.error(err);
+      toast.error(err?.response?.data?.message || 'Error al crear la categoría');
     }
   };
 
@@ -72,7 +73,7 @@ function Admin_Home() {
         s.categoria === category.name ? { ...s, categoria: 'General' } : s
       ));
     } catch (err) {
-      console.error(err);
+      toast.error(err?.response?.data?.message || 'Error al eliminar la categoría');
     }
   };
 

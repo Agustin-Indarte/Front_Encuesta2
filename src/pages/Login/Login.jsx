@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
 import { useAuth } from "../../context/AuthContext";
@@ -29,7 +28,11 @@ const Login = () => {
       }
     } catch (err) {    
       const messages = err.response?.data?.err;
-      console.log(err);
+      // Mostrar mensaje detallado si existe, si no usar el manejo por defecto más abajo
+      if (!messages) {
+        const serverMsg = err.response?.data?.message || err.message || "Error al iniciar sesión";
+        toast.error(serverMsg);
+      }
       if(Array.isArray(messages)){
         messages.forEach((msg) => toast.error(msg))
       } else {

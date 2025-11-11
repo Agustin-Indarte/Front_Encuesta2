@@ -28,16 +28,7 @@ function Recuperar() {
       setError(data.message || "Error :(")
     }
     };
-  /* const [email, setEmail] = useState("");
-  const navigate = useNavigate();
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Simulando envío de correo a:", email);
-    setTimeout(() => {
-      navigate("/correo-enviado");
-    }, 1000);
-  }; */
+  
 
   return (
     <div className="login-section">

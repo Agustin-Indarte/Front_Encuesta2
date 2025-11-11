@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { toast } from 'react-hot-toast';
 import { Navbar, AdmGridCards } from '../../components';
 import { Row, Form, Col, Button } from 'react-bootstrap';
 import { getCategories } from '../../api/apiAdministrador/Category';
@@ -169,8 +170,9 @@ function Admin_Encuestas() {
     alert('Encuesta enviada correctamente al backend');
 
   } catch (error) {
+    const serverMsg = error?.response?.data?.message || error?.message || 'Error al enviar la encuesta al backend';
     alert('Error al enviar la encuesta al backend');
-    console.error(error);
+    toast.error(serverMsg);
   }
 };
 

@@ -8,7 +8,7 @@ function GridCard({ surveys }) {
 
     const handleResponder = (survey) => {
         navigate('/user/encuestas', { state: { encuesta: survey } });
-        console.log(encuesta);
+    
 
     };
 

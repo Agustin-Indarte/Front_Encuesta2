@@ -57,7 +57,10 @@ function Form_Register() {
       navigate("/login");
     } catch (err) {
       const messages = err.response?.data?.error;
-      console.log(err);
+      const serverMsg = err?.response?.data?.message || err?.message;
+      if (!messages && serverMsg) {
+        toast.error(serverMsg);
+      }
       if(Array.isArray(messages)){
         messages.forEach((msg) => toast.error(msg))
       } else {

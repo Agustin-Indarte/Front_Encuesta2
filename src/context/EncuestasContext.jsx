@@ -1,4 +1,5 @@
 import { createContext, useState, useContext,useEffect } from 'react';
+import { toast } from 'react-hot-toast';
 
 export const EncuestasContext = createContext();
 
@@ -10,7 +11,7 @@ export function EncuestasProvider({ children }) {
       const saved = localStorage.getItem('surveyCategories');
       return saved ? JSON.parse(saved) : [];
     } catch (error) {
-      console.error('Error loading categories:', error);
+      toast.error(`Error cargando categorías locales: ${error?.message || ''}`);
       return [];
     }
   };
