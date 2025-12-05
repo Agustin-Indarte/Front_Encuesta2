@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Col, Row, Button } from 'react-bootstrap';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { IoMdArrowRoundBack } from "react-icons/io";
 import {Navbar, UserGridCards} from '../../components';
 import { guardarRespuesta } from '../../api';
 
@@ -8,6 +9,7 @@ function User_Encuestas() {
   const location = useLocation();
   const encuesta = location.state?.encuesta;
   const [respuestas, setRespuestas] = useState([]);
+  const navigate = useNavigate();
 
   // Usa un ObjectId de usuario real (ajusta este valor por uno válido de tu base de datos)
   const usuarioId = '665f2c7b8e8b2c0012a1b2c4';
@@ -39,7 +41,16 @@ function User_Encuestas() {
       <div className="Container-Page">
         <Row className="w-100 mb-4">
           <Col md={3} >
-           
+            {/* Ícono mínimo para volver */}
+            <Button
+              variant="link"
+              className="p-0 d-flex align-items-center"
+              onClick={() => navigate('/user/home')}
+              aria-label="Volver al home del usuario"
+              title="Volver"
+            >
+              <IoMdArrowRoundBack size={35} />
+            </Button>
           </Col>
           <Col md={6} className='d-flex align-items-center justify-content-center'> <h2 className='title-page mb-0'>{encuesta?.name}</h2></Col>
      

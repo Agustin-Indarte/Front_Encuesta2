@@ -4,8 +4,9 @@ import { Navbar, AdmGridCards } from '../../components';
 import { Row, Form, Col, Button } from 'react-bootstrap';
 import { getCategories } from '../../api/apiAdministrador/Category';
 import './Admin_Encuestas.css'
-
-import { crearEncuesta } from '../../api'; // importa la función
+import { crearEncuesta } from '../../api';
+import { useNavigate } from 'react-router-dom';
+import { IoMdArrowRoundBack } from "react-icons/io";
 
 function Admin_Encuestas() {
   const initialized = useRef(false);
@@ -18,6 +19,7 @@ function Admin_Encuestas() {
     cards: []
   });
   const [activeCardId, setActiveCardId] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getCategories().then(setCategories).catch(() => setCategories([]));
@@ -183,6 +185,16 @@ function Admin_Encuestas() {
 
         <Row className="w-100 mb-4">
           <Col md={3} className='d-flex align-items-center'>
+            {/* Ícono mínimo para volver */}
+            <Button
+              variant="link"
+              className="p-0 me-2 d-flex align-items-center"
+              onClick={() => navigate('/admin/home')}
+              aria-label="Volver al home del admin"
+              title="Volver"
+            >
+              <IoMdArrowRoundBack size={35} />
+            </Button>
             <h2 className='title-page mb-0'>CREAR ENCUESTA</h2>
           </Col>
           <Col md={3}>
