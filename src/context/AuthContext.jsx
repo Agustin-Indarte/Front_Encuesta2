@@ -1,4 +1,5 @@
 import {createContext, useContext, useState, useEffect} from 'react';
+import { toast } from 'react-hot-toast';
 import * as authService from "../services/authService";
 
 const AuthContext = createContext();
@@ -23,22 +24,28 @@ const login = async (credentials) => {
 }
 
 const logout = async () => {
-    localStorage.removeItem("token");
-    setUser(null);
-    setProfileImage(null);
-    await fetch("https://back-encuesta2.onrender.com/api/v1/logout", {
-        method: "POST",
-        headers: {
-            Authorization: `Bearer ${getToken()}`
+    const token = getToken();
+    try {
+        if (token) {
+            await fetch("https://back-encuesta2.onrender.com/api/v1/logout", {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
         }
-    })
+        toast.success("Sesión cerrada");
+    } finally {
+        localStorage.removeItem("token");
+        setUser(null);
+        setProfileImage(null);
+    }
 }
 
 const getProfile = async () => {
     const token = getToken();
 
     if(!token){
-        console.log("No hay token en getProfile!");
         return        
     }
 
@@ -54,8 +61,7 @@ const getProfile = async () => {
 
 //useEffect que solo se ejecuta si hay un token ya guardado
 useEffect(() => { 
-        const token = getToken()
-        console.log("Token al iniciar");
+    const token = getToken()
 
         if(!token){
             setLoading(false);
@@ -65,15 +71,15 @@ useEffect(() => {
         const init = async () => {
             try {
                 const valid = await authService.verifyToken();
-                console.log("token valido: ", valid);
                 if(valid){
                     await getProfile()
                 } else {
-                    logout()
+                    toast.error("Tu sesión expiró. Vuelve a iniciar sesión.");
+                    await logout()
                 }                
             } catch (error) {
-                console.log("error al verificar token:", error);
-                logout()               
+                toast.error("Error al verificar sesión. Vuelve a iniciar sesión.");
+                await logout()               
             } finally {
                 setLoading(false);
             }
